@@ -52,7 +52,7 @@ class Scene():
 			print(e)
 
 		(rows,cols) = cv_image.shape
-		self.depth_vals = cv_image/1000
+		self.depth_vals = cv_image/1000.0
 		# print(depth_vals.shape)
 
 
@@ -95,10 +95,13 @@ class Scene():
 
 ##########################################################################################################################
 
-# def get_max_depth(depth_mat):
+def get_max_depth(depth_mat):
 
-# ######### Get the max depth index value within a given ROI ############
-		
+######### Get the max depth index value within a given ROI ############
+	max_depth = np.amin(depth_mat)
+	if max_depth < 0.3:
+		max_depth = 0.32
+	return max_depth-0.004		
 
 
 if __name__ == '__main__':
@@ -110,32 +113,38 @@ if __name__ == '__main__':
 	scene.subscribe()
 	time.sleep(2)
 	first_peg = scene.pegs[0]
-	print(first_peg)
-	ROI = scene.color_frame[first_peg[2]:first_peg[0],first_peg[3]:first_peg[1],:]
-	print ROI.shape
-	cv2.imshow("ROI",ROI)
-	cv2.waitKey(0)
-	cv2.destroyWindow()
-	rospy.spin()
+	ROI = scene.color_frame[first_peg[2]:first_peg[3],first_peg[0]:first_peg[1],:]
+	depth_ROI = scene.depth_vals[first_peg[2]:first_peg[3],first_peg[0]:first_peg[1]]
+	
+	z_coord = get_max_depth(depth_ROI)
+	
+	
+		
+		
+	
 	# time.sleep(2)
 
 
-	# approach = S1()
-	# approach.ret_to_neutral('left')
-	# approach.ret_to_neutral('right')
-	# time.sleep(5)
-	# print "Arms at neutral"
-	# # Wait until a peg is found
+	approach = S1()
+	approach.ret_to_neutral('left')
+	approach.ret_to_neutral('right')
+	time.sleep(5)
+	print "Arms at neutral"
+	# Wait until a peg is found
 	
-	# # Get the camera coords of the object of interest
-	# first_peg = scene.pegs[0]
-	# #cam_points = [first_peg[0], first_peg[2], 0.3338,1]
-	# z_coord = get_max_depth()
-	# yumi_pose = cam2robot(first_peg[0], first_peg[2], 0.3338, scene.K,'left')
+	# Get the camera coords of the object of interest
+	#cam_points = [first_peg[0], first_peg[2], 0.3338,1]
+	print (z_coord)
+	yumi_pose = cam2robot(first_peg[0], first_peg[2], z_coord, scene.K,'left')
 	
-	# approach.surgeme1(1,yumi_pose,'left')
-	# time.sleep(5)
-	# print("Finished Approach")
+	approach.surgeme1(1,yumi_pose,'left')
+	time.sleep(5)
+	print("Finished Approach")
+	# print ROI.shape
+	cv2.imshow("ROI",ROI)
+	if cv2.waitKey(0) & 0xFF == ord('q'):
+		cv2.destroyWindow("ROI")
+	rospy.spin()
 
 
 # Executing LIFT
