@@ -11,6 +11,7 @@ import pickle as pkl
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
+from yumi_homography_functions import *
 
 ################################
 # Data parser functionj
@@ -210,3 +211,12 @@ def get_3dpt_depth(pixel, depth, k):
     x = (u - cx)*depth/fx
     y = (v - cy)*depth/fy
     return np.array([x,y,depth])
+
+def cam2robot(x,y,z,K,hand):
+    cam_points = get_3dpt_depth([x,y],z,K)
+    cam_points = np.concatenate((cam_points,[1]))
+    world_points = camera_to_world(cam_points)
+    robot_pose = world_to_yumi(world_points, hand)
+    robot_pose = robot_pose.reshape(3)
+    return robot_pose
+

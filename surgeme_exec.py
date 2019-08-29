@@ -30,13 +30,17 @@ class Scene():
 		self.pegs = []
 		self.bridge = CvBridge()
 		self.KI = []
+		self.depth_vals = []
+		self.color_frame =[]
 
 
 	def get_bbox(self,data):
+		# print("Entered")
 		pegs = []
 		for box in data.bounding_boxes:
 			pegs.append([box.xmin, box.xmax, box.ymin, box.ymax])
 		self.pegs = pegs
+
 
 	def depth_cb(self,data):
 	#img = data
@@ -48,7 +52,8 @@ class Scene():
 			print(e)
 
 		(rows,cols) = cv_image.shape
-		depth_vals = cv_image/1000
+		self.depth_vals = cv_image/1000
+		# print(depth_vals.shape)
 
 
 	def camera_callback(self, data):
@@ -56,6 +61,14 @@ class Scene():
 		# print(data.K)
 		# data.encoding = "bgr8"
 		self.K = np.array(list(data.K)).reshape(3,3)
+
+	def image_callback(self, data):
+
+		color_frame = self.bridge.imgmsg_to_cv2(data, "rgb8")
+		self.color_frame = cv2.cvtColor(color_frame,cv2.COLOR_BGR2RGB)
+		# cv2.imshow('image',self.color_frame)
+		# cv2.waitKey(0)
+		# cv2.destroyAllWindows()	
 
 	############### Stuff to display the depth image#########################
 
@@ -73,58 +86,57 @@ class Scene():
 	# 	cv2.imshow("Image window", cv_image_norm)
 	# 	cv2.waitKey(3)
 
-	def listener(self):
+	def subscribe(self):
 		rospy.init_node('BoundingBoxes', anonymous=True)
 		rospy.Subscriber('/darknet_ros/bounding_boxes', BoundingBoxes, self.get_bbox)
-		rospy.Subscriber('/camera/aligned_depth_to_color/image_raw', Image, self.depth_cb) 
+		rospy.Subscriber('/camera/aligned_depth_to_color/image_raw', Image, self.depth_cb)
 		rospy.Subscriber("/camera/color/camera_info",CameraInfo, self.camera_callback)
+		rospy.Subscriber("/camera/color/image_raw",Image, self.image_callback)
 
 ##########################################################################################################################
+
+# def get_max_depth(depth_mat):
+
+# ######### Get the max depth index value within a given ROI ############
+		
 
 
 if __name__ == '__main__':
 	# t = S3()
 	# t.left_open()
 	# t.right_open()
+
 	scene = Scene()
-	scene.listener()
+	scene.subscribe()
 	time.sleep(2)
-	# rospy.spin()
-
-	approach = S1()
-	approach.ret_to_neutral('left')
-	approach.ret_to_neutral('right')
-	time.sleep(2)
-	print "Arms at neutral"
-
-	# Wait until a peg is found
-	while len(scene.pegs) == 0:
-		sleep(0.1)
-	# Get the camera coords of the object of interest
 	first_peg = scene.pegs[0]
-	#cam_points = [first_peg[0], first_peg[2], 0.3338,1]
-	cam_points = get_3dpt_depth([first_peg[0], first_peg[2]], 0.3338, scene.K)
-	print("cam_points", cam_points)
-	cam_points = np.concatenate((cam_points,[1]))
-	world_points = camera_to_world(cam_points)
-	# print("cam_points", cam_points)
-	print("world_points", world_points)
-	print("intrin", scene.K[0,2],scene.K[1,2],scene.K[0,0],scene.K[1,1])
-
-	world_points = world_points
-	# world_points = np.transpose(world_points)
-	# print(world_points.shape)
-	yumi_pose = world_to_yumi(world_points, 'left')
-	
-	yumi_pose = yumi_pose.reshape(3)
-	print ("robot points",yumi_pose)
-	approach.surgeme1(1,yumi_pose,'left')
-	time.sleep(2)
-	print("Finished Approach")
+	print(first_peg)
+	ROI = scene.color_frame[first_peg[2]:first_peg[0],first_peg[3]:first_peg[1],:]
+	print ROI.shape
+	cv2.imshow("ROI",ROI)
+	cv2.waitKey(0)
+	cv2.destroyWindow()
 	rospy.spin()
-	# while not rospy.is_shutdown():
-	# 	time.sleep(5)
-	# 	break
+	# time.sleep(2)
+
+
+	# approach = S1()
+	# approach.ret_to_neutral('left')
+	# approach.ret_to_neutral('right')
+	# time.sleep(5)
+	# print "Arms at neutral"
+	# # Wait until a peg is found
+	
+	# # Get the camera coords of the object of interest
+	# first_peg = scene.pegs[0]
+	# #cam_points = [first_peg[0], first_peg[2], 0.3338,1]
+	# z_coord = get_max_depth()
+	# yumi_pose = cam2robot(first_peg[0], first_peg[2], 0.3338, scene.K,'left')
+	
+	# approach.surgeme1(1,yumi_pose,'left')
+	# time.sleep(5)
+	# print("Finished Approach")
+
 
 # Executing LIFT
 
