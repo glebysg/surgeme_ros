@@ -220,3 +220,36 @@ def cam2robot(x,y,z,K,hand):
     robot_pose = robot_pose.reshape(3)
     return robot_pose
 
+def cam2robot_array(pose,K,hand):
+    pose_array = []
+    for x,y,z in pose: 
+        cam_points = get_3dpt_depth([x,y],z,K)
+        cam_points = np.concatenate((cam_points,[1]))
+        world_points = camera_to_world(cam_points)
+        robot_pose = world_to_yumi(world_points, hand)
+        robot_pose = robot_pose.reshape(3)
+        pose_array.append(robot_pose)
+    return pose_array
+
+
+# Normal to a line defined by a point in 2d
+def normal_to_line(point_1, point_2):
+    dx = point_2[0] - point_1[0]
+    dy = point_2[1] - point_1[1]
+    normal = np.array([-dy,dx])
+    normal = normal/np.linalg.norm(normal)
+    return normal
+
+# Return the four corner points given bounding boxes
+def create_bbox_rob_points(bbox,z):
+
+    pts = []
+    a = [bbox[0],bbox[2],z]
+    b = [bbox[0],bbox[3],z]
+    c = [bbox[1],bbox[2],z]
+    d = [bbox[1],bbox[3],z]
+    pts.append(a)
+    pts.append(b)
+    pts.append(c)
+    pts.append(d)
+    return np.array(pts)

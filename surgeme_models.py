@@ -14,6 +14,11 @@ import pickle as pkl
 import csv
 import IPython
 from helpers import load_pose_by_path
+from scipy.interpolate import interp1d
+import math
+
+
+y=None
 
 ##########################################################################################################################
 #Approach
@@ -21,7 +26,9 @@ class S1:
 
 	def __init__(self):
 		self.y = YuMiRobot(include_right=True, log_state_histories=True, log_pose_histories=True)
-
+		global y
+		y = self.y
+		# self.y = y
 				# TODO CHANGE THIS TO THE YUMI CLASS LATER
 		self.neutral_pose = load_pose_by_path('data/yumi_default_peg.txt')
 		#setup the ool distance for the surgical grippers
@@ -50,10 +57,145 @@ class S1:
 		des_pos_left.rotation = self.neutral_pose[limb].rotation
 		arm.goto_pose(des_pos_left,False,True,False)
 		print "Moved to neutral :)"
+	
+	def get_curr_pose(self,limb):
+		arm = self.y.right if limb == 'right' else self.y.left
+		return arm.get_pose()
+	
+	def left_close(self):
+		self.y.left.close_gripper(force=12,wait_for_res=False)
+	
+	def left_open(self):
+		self.y.left.move_gripper(0.005)
+	
+	def right_close(self):
+		self.y.right.close_gripper(force=12,wait_for_res=False)
 
+	def right_open(self):
+		self.y.right.move_gripper(0.005)
 
+	def joint_orient(self,limb,j_val,offset = 162):
+	 	
+		arm_scale = interp1d([0,180],[-18,offset]) 
+		peg_scale = interp1d([0,offset],[-18,offset])
+		arm = self.y.right if limb == 'right' else self.y.left
+		temp = arm.get_state()
+		curr_angles = temp.joints
+		print("Curr Angles before turning joint 5:",curr_angles)
+		curr_j5 = curr_angles[5]
+		print ("Joint 5 degrees ",curr_j5)
+		if (curr_j5) - (arm_scale(j_val)) > 0 :
+			# print ("Subracing diff value ")
+			diff_angle = (curr_j5)-(arm_scale(j_val))
+			curr_angles[5] = curr_j5-diff_angle
+		else:
+			diff_angle = (curr_j5)-(arm_scale(j_val))
+			curr_angles[5] = curr_j5+abs(diff_angle)
+			# print ("Adding diff value ")
+		print("Curr Angles after getting turn value for  joint 5:",curr_angles)
+		a = input("Are you satsis")
+		temp.joints = curr_angles
+		arm.goto_state(temp) 
+		time.sleep(2)
 
 	def surgeme1(self,peg,desired_pos,limb):
+		arm = self.y.right if limb == 'right' else self.y.left
+		curr_pos = arm.get_pose()
+		print "Current location: ", curr_pos.translation
+		print "Approaching desired peg: ",peg
+		des_pos = curr_pos
+		#print "Desired_POS",desired_pos
+		desired_pos = desired_pos + self.offset_thresh
+		des_pos.translation = desired_pos
+		#print "DES",des_pos_left
+		arm.goto_pose(des_pos,False,True,False)
+		time.sleep(5)
+
+		curr_pos = arm.get_pose()
+		print "Current location after moving: ", curr_pos.translation
+		time.sleep(3)
+		
+
+	def surgeme2(self,peg,desired_pos,limb):
+		self.y.set_v(10)	
+		arm = self.y.right if limb == 'right' else self.y.left
+		curr_pos = arm.get_pose()
+		print "Current location: ", curr_pos.translation
+		print "Approaching desired peg: ",peg
+		des_pos = curr_pos
+		#print "Desired_POS",desired_pos
+		desired_pos = desired_pos + self.offset_thresh
+		des_pos.translation = desired_pos
+		#print "DES",des_pos_left
+		arm.goto_pose(des_pos,False,True,False)
+		time.sleep(15)
+
+		curr_pos = arm.get_pose()
+		print "Current location after moving: ", curr_pos.translation
+		self.left_close()
+		time.sleep(1)
+		print "Shuting yumi"
+		self.y.stop()
+
+	def surgeme3(self,peg,limb):#lift is hardcoded
+		arm = self.y.right if limb == 'right' else self.y.left
+		curr_pos = arm.get_pose()
+		print "Current location: ", curr_pos.translation
+		print "Approaching desired peg: ",peg
+		des_pos = curr_pos
+		#print "Desired_POS",desired_pos
+		desired_pos = des_pos.translation
+		desired_pos[2] = 0.05 
+		des_pos.translation = desired_pos
+		#print "DES",des_pos_left
+		arm.goto_pose(des_pos,False,True,False)
+		time.sleep(5)
+
+		curr_pos = arm.get_pose()
+		print "Current location after moving: ", curr_pos.translation
+		time.sleep(3)
+##########################################################################################################################
+#Align & Grasp
+class S2:
+
+	def __init__(self):
+		
+		global y
+		self.y = y
+
+		self.neutral_pose = load_pose_by_path('data/yumi_default_peg.txt')
+		#setup the ool distance for the surgical grippers
+		# ORIGINAL GRIPPER TRANSFORM IS tcp2=RigidTransform(translation=[0, 0, 0.156], rotation=[[ 1. 0. 0.] [ 0. 1. 0.] [ 0. 0. 1.]])
+
+		DELTARIGHT=RigidTransform(translation=[0, 0, 0.205], rotation=[1, 0, 0, 0])
+		DELTALEFT=RigidTransform(translation=[0, 0, 0.205], rotation=[1, 0, 0, 0]) #old version version is 0.32
+		self.y.left.set_tool(DELTALEFT)
+		self.y.right.set_tool(DELTARIGHT)
+		self.y.set_v(40)
+		self.y.set_z('z100')
+
+
+
+		self.init_pose_left=self.y.left.get_pose()
+		self.init_pose_right=self.y.right.get_pose()
+		#self.offset_thresh = [0,0,random.uniform(0.005,0.01)]
+		self.offset_thresh = [0,0,0]
+
+	
+
+	def left_close(self):
+		self.y.left.close_gripper(force=2,wait_for_res=False)
+	
+	def left_open(self):
+		self.y.left.move_gripper(0.005)
+	
+	def right_close(self):
+		self.y.right.close_gripper(force=2,wait_for_res=False)
+
+	def right_open(self):
+		self.y.right.move_gripper(0.005)
+
+	def surgeme2(self,peg,desired_pos,limb):
 		arm = self.y.right if limb == 'right' else self.y.left
 		curr_pos = arm.get_pose()
 		print "Current location: ", curr_pos.translation
@@ -71,7 +213,7 @@ class S1:
 
 #########################################################################################################################
 #Lift
-class S2:
+class S10:
 
 	def __init__(self):
 
