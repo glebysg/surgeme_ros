@@ -21,8 +21,8 @@ import math
 y=None
 
 ##########################################################################################################################
-#Approach
-class S1:
+
+class Surgemes:
 
 	def __init__(self):
 		self.y = YuMiRobot(include_right=True, log_state_histories=True, log_pose_histories=True)
@@ -30,7 +30,13 @@ class S1:
 		y = self.y
 		# self.y = y
 				# TODO CHANGE THIS TO THE YUMI CLASS LATER
-		self.neutral_pose = load_pose_by_path('data/yumi_default_peg.txt')
+		self.neutral_pose = load_pose_by_path('data/neutral_pose_peg.txt')
+		self.neutral_angles = load_pose_by_path('data/neutral_angles_pose_peg1.txt')
+		self.transfer_pose_high_left = load_pose_by_path('data/transfer_pose_high.txt')
+		self.transfer_pose_low_left = load_pose_by_path('data/transfer_pose_low.txt')
+		self.transfer_pose_high_right = load_pose_by_path('data/transfer_pos_high_right_to_left.txt')
+		self.transfer_pose_low_right = load_pose_by_path('data/transfer_pos_low_right_to_left.txt')
+
 		#setup the ool distance for the surgical grippers
 		# ORIGINAL GRIPPER TRANSFORM IS tcp2=RigidTransform(translation=[0, 0, 0.156], rotation=[[ 1. 0. 0.] [ 0. 1. 0.] [ 0. 0. 1.]])
 
@@ -49,6 +55,7 @@ class S1:
 		self.offset_thresh = [0,0,0]
 
 	def ret_to_neutral(self,limb):
+		self.y.set_v(40)
 		arm = self.y.right if limb == 'right' else self.y.left
 
 		curr_pos_left = arm.get_pose()
@@ -56,6 +63,19 @@ class S1:
 		des_pos_left.translation = self.neutral_pose[limb].translation
 		des_pos_left.rotation = self.neutral_pose[limb].rotation
 		arm.goto_pose(des_pos_left,False,True,False)
+		print "Moved to neutral :)"
+
+
+	def ret_to_neutral_angles(self,limb):
+		self.y.set_v(40)
+		arm = self.y.right if limb == 'right' else self.y.left
+
+		limb_angles = 'left_angles' if limb == 'left' else 'right_angles'
+
+		curr_pos_limb = arm.get_state()
+		des_pos_limb = curr_pos_limb 
+		des_pos_limb.joints = self.neutral_angles[limb_angles].joints
+		arm.goto_state(des_pos_limb)
 		print "Moved to neutral :)"
 	
 	def get_curr_pose(self,limb):
@@ -74,12 +94,20 @@ class S1:
 	def right_open(self):
 		self.y.right.move_gripper(0.005)
 
-	def joint_orient(self,limb,j_val,offset = 162):
+	def joint_orient(self,limb,j_val,offset = 150):
 	 	
-		arm_scale = interp1d([0,180],[-18,offset]) 
-		peg_scale = interp1d([0,offset],[-18,offset])
+
+		
 		arm = self.y.right if limb == 'right' else self.y.left
 		temp = arm.get_state()
+		if limb == 'left':
+			offset = 150
+			arm_scale = interp1d([0,180],[-30,offset]) 
+			peg_scale = interp1d([0,offset],[-30,offset])
+		elif limb == 'right':
+			offset = 50
+			arm_scale = interp1d([0,180],[-130,offset]) 
+			peg_scale = interp1d([0,offset],[-130,offset])
 		curr_angles = temp.joints
 		print("Curr Angles before turning joint 5:",curr_angles)
 		curr_j5 = curr_angles[5]
@@ -93,7 +121,7 @@ class S1:
 			curr_angles[5] = curr_j5+abs(diff_angle)
 			# print ("Adding diff value ")
 		print("Curr Angles after getting turn value for  joint 5:",curr_angles)
-		a = input("Are you satsis")
+		# a = input("Are you satsis")
 		temp.joints = curr_angles
 		arm.goto_state(temp) 
 		time.sleep(2)
@@ -124,18 +152,19 @@ class S1:
 		print "Approaching desired peg: ",peg
 		des_pos = curr_pos
 		#print "Desired_POS",desired_pos
-		desired_pos = desired_pos + self.offset_thresh
+		# desired_pos = desired_pos + self.offset_thresh
 		des_pos.translation = desired_pos
 		#print "DES",des_pos_left
 		arm.goto_pose(des_pos,False,True,False)
-		time.sleep(15)
+		time.sleep(10)
 
 		curr_pos = arm.get_pose()
 		print "Current location after moving: ", curr_pos.translation
-		self.left_close()
-		time.sleep(1)
-		print "Shuting yumi"
-		self.y.stop()
+		if limb == 'left':
+			self.left_close()
+		else:
+			self.right_close()
+
 
 	def surgeme3(self,peg,limb):#lift is hardcoded
 		arm = self.y.right if limb == 'right' else self.y.left
@@ -151,368 +180,127 @@ class S1:
 		arm.goto_pose(des_pos,False,True,False)
 		time.sleep(5)
 
-		curr_pos = arm.get_pose()
-		print "Current location after moving: ", curr_pos.translation
-		time.sleep(3)
-##########################################################################################################################
-#Align & Grasp
-class S2:
-
-	def __init__(self):
 		
-		global y
-		self.y = y
-
-		self.neutral_pose = load_pose_by_path('data/yumi_default_peg.txt')
-		#setup the ool distance for the surgical grippers
-		# ORIGINAL GRIPPER TRANSFORM IS tcp2=RigidTransform(translation=[0, 0, 0.156], rotation=[[ 1. 0. 0.] [ 0. 1. 0.] [ 0. 0. 1.]])
-
-		DELTARIGHT=RigidTransform(translation=[0, 0, 0.205], rotation=[1, 0, 0, 0])
-		DELTALEFT=RigidTransform(translation=[0, 0, 0.205], rotation=[1, 0, 0, 0]) #old version version is 0.32
-		self.y.left.set_tool(DELTALEFT)
-		self.y.right.set_tool(DELTARIGHT)
-		self.y.set_v(40)
-		self.y.set_z('z100')
 
 
+		time.sleep(1)
+		# print "Shuting yumi"
+		# self.y.stop()
+		
 
-		self.init_pose_left=self.y.left.get_pose()
-		self.init_pose_right=self.y.right.get_pose()
-		#self.offset_thresh = [0,0,random.uniform(0.005,0.01)]
-		self.offset_thresh = [0,0,0]
 
-	
-
-	def left_close(self):
-		self.y.left.close_gripper(force=2,wait_for_res=False)
-	
-	def left_open(self):
-		self.y.left.move_gripper(0.005)
-	
-	def right_close(self):
-		self.y.right.close_gripper(force=2,wait_for_res=False)
-
-	def right_open(self):
-		self.y.right.move_gripper(0.005)
-
-	def surgeme2(self,peg,desired_pos,limb):
+	def surgeme4(self, limb='left'):#Tranfer Approach
+		oposite_limb = 'right' if limb == 'left' else 'left'
+		oposite_limb_angles = 'right_angles' if limb == 'left' else 'left_angles'
+		limb_angles = 'left_angles' if limb == 'left' else 'right_angles'
+		# self.y.set_v(40)
 		arm = self.y.right if limb == 'right' else self.y.left
+		oposite_arm = self.y.right if limb == 'left' else self.y.left
 		curr_pos = arm.get_pose()
-		print "Current location: ", curr_pos.translation
-		print "Approaching desired peg: ",peg
-		des_pos = curr_pos
-		#print "Desired_POS",desired_pos
-		desired_pos = desired_pos + self.offset_thresh
-		des_pos.translation = desired_pos
-		#print "DES",des_pos_left
-		arm.goto_pose(des_pos,False,True,False)
+		# print "Current location after returning to neutral: ", curr_pos
+		# print "Shuting yumi"
+		# self.y.stop()
+		oposite_arm.open()
+		curr_pos_limb = arm.get_state()
+		des_pos_limb = curr_pos_limb 
+		if limb == 'left':
+			des_pos_limb.joints = self.transfer_pose_high_left[limb_angles].joints
+			des_pos_oposite_limb.joints = self.transfer_pose_high_left[oposite_limb_angles].joints
+		else:
+			des_pos_limb.joints = self.transfer_pose_high_right[limb_angles].joints
+			des_pos_oposite_limb.joints = self.transfer_pose_high_right[oposite_limb_angles].joints
+		arm.goto_state(des_pos_limb)
+
+		curr_pos_oposite_limb = oposite_arm.get_state()
+		des_pos_oposite_limb = curr_pos_oposite_limb
+		oposite_arm.goto_state(des_pos_oposite_limb)
+
 		time.sleep(5)
+		################################ DO Transer pose lose #######
 
-		curr_pos = arm.get_pose()
-		print "Current location after moving: ", curr_pos.translation
+		curr_pos_limb = arm.get_state()
+		des_pos_limb = curr_pos_limb 
+		if limb == 'left':
+			des_pos_limb.joints = self.transfer_pose_low_left[limb_angles].joints
+			des_pos_oposite_limb.joints = self.transfer_pose_low_left[oposite_limb_angles].joints
+		else:
+			des_pos_limb.joints = self.transfer_pose_low_right[limb_angles].joints
+			des_pos_oposite_limb.joints = self.transfer_pose_low_right[oposite_limb_angles].joints
+		arm.goto_state(des_pos_limb)
 
-#########################################################################################################################
-#Lift
-class S10:
+		curr_pos_oposite_limb = oposite_arm.get_state()
+		des_pos_oposite_limb = curr_pos_oposite_limb
+		oposite_arm.goto_state(des_pos_oposite_limb)
 
-	def __init__(self):
-
-		# self.y=YuMiRobot(include_right=True, log_state_histories=True, log_pose_histories=True)
-		global y
-		self.y = y
-		#setup the ool distance for the surgical grippers
-		# ORIGINAL GRIPPER TRANSFORM IS tcp2=RigidTransform(translation=[0, 0, 0.156], rotation=[[ 1. 0. 0.] [ 0. 1. 0.] [ 0. 0. 1.]])
-
-		DELTARIGHT=RigidTransform(translation=[0, 0, 0.205], rotation=[1, 0, 0, 0])
-		DELTALEFT=RigidTransform(translation=[0, 0, 0.205], rotation=[1, 0, 0, 0]) #old version version is 0.32
-		self.y.left.set_tool(DELTALEFT)
-		self.y.right.set_tool(DELTARIGHT)
-		self.y.set_v(40)
-		self.y.set_z('z100')
-
-
-
-		self.init_pose_left=self.y.left.get_pose()
-		self.init_pose_right=self.y.right.get_pose()
+		time.sleep(5)
+		# print "Shuting yumi"
+		# self.y.stop()
 		
-		
-	def ret_to_neutral(self,limb):
+		# Go above the transfer pose
+		# curr_pos_limb = arm.get_pose()
+		# des_pos_limb = curr_pos_limb 
+		# des_pos_limb.translation = self.transfer_pose_high[limb].translation
+		# # des_pos_limb.rotation = self.transfer_pose_high[limb].rotation
 
+		# curr_pos_oposite_limb = oposite_arm.get_pose()
+		# des_pos_oposite_limb = curr_pos_oposite_limb
+		# des_pos_oposite_limb.translation = self.transfer_pose_high[oposite_limb].translation
+		# # des_pos_oposite_limb.rotation = self.transfer_pose_high[oposite_limb].rotation
+		# # print "Moved to Transfer Approach "
+		# #self.y.goto_pose_sync(des_pos_left, des_pos_right)
+		# arm.goto_pose(des_pos_limb,False,True,False)
+		# arm.goto_pose(des_pos_oposite_limb,False,True,False)
+		# time.sleep(7)
+		# # Tranfer pose
+		# curr_pos_limb = arm.get_pose()
+		# des_pos_limb = curr_pos_limb 
+		# des_pos_limb.translation = self.transfer_pose_low[limb].translation
+		# # des_pos_limb.rotation = self.transfer_pose_low[limb].rotation
 
+		# curr_pos_oposite_limb = oposite_arm.get_pose()
+		# des_pos_oposite_limb = curr_pos_oposite_limb
+		# des_pos_oposite_limb.translation = self.transfer_pose_low[oposite_limb].translation
+		# # des_pos_oposite_limb.rotation = self.transfer_pose_low[oposite_limb].rotation
+		# print "Moved to Transfer Approach "
+		# #self.y.goto_pose_sync(des_pos_left, des_pos_right)
+		# arm.goto_pose(des_pos_limb,False,True,False)
+		# arm.goto_pose(des_pos_oposite_limb,False,True,False)
+		# time.sleep(3)
 
-		if limb == 'left':# assigned peg value of 1 
-			curr_pos_left = self.y.left.get_pose()
-			des_pos_left = curr_pos_left
-			des_pos_left.translation = [0.37278003,0.0719 -0.007,0.00775+0.001]
-			des_pos_left.rotation = [[-0.47578654, -0.87380913 , 0.10042293],[-0.75995407,  0.35091608, -0.54710851], [ 0.44282839, -0.33662368, -0.83101595]]
-
-			self.y.left.goto_pose(des_pos_left,False,True,False)
-			#time.sleep(5)
-			print "Moved to neutral "
-
-
-
-		if limb == 'right': # Need to assign peg values
-			curr_pos_right = self.y.right.get_pose()
-			des_pos_right = curr_pos_right
-			des_pos_right.translation = [ 0.37278003, -0.08536001 , 0.00775]
-			des_pos_right.rotation = [[-0.2283057  , 0.88719064 , 0.40096044], [ 0.69851396, -0.13761998 , 0.70223855], [ 0.67819964 , 0.44040153 ,-0.58829562]]
-			self.y.right.goto_pose(des_pos_right,False,True,False)
-			print "Moved to neutral "
-
-		if limb == 'both':
-			curr_pos_left = self.y.left.get_pose()
-			des_pos_left = curr_pos_left
-			des_pos_left.translation = [0.33670002,0.11435001,0.10492]
-			des_pos_left.rotation = [[-0.39892747,-0.82643495 ,0.39731869], [-0.72430491, 0.01826895 ,-0.68923773], [ 0.56235155 ,-0.56273574 ,-0.60587888]]
-
-			curr_pos_right = self.y.right.get_pose()
-			des_pos_right = curr_pos_right
-			des_pos_right.translation = [ 0.33832002, -0.08536001 , 0.10328]
-			des_pos_right.rotation = [[-0.2283057  , 0.88719064 , 0.40096044], [ 0.69851396, -0.13761998 , 0.70223855], [ 0.67819964 , 0.44040153 ,-0.58829562]]
-			print "Moved to neutral "
-			self.y.goto_pose_sync(des_pos_left, des_pos_right)
-
-
-	def surgeme2(self,peg,desired_pos ,limb):
+	def surgeme5(self,limb='left'):
 
 		if limb == 'left':
-			curr_pos_left = self.y.left.get_pose()
-			print "Current location: ", curr_pos_left.translation
-			print "Approaching desired peg: ",peg 
-			des_pos_left = curr_pos_left
-			
-
-			des_pos_left.translation = desired_pos
-			
-			self.y.left.goto_pose(des_pos_left,False,True,False)
-			time.sleep(5)
-
-			curr_pos_left = self.y.left.get_pose()
-			print "Current location after moving: ", curr_pos_left.translation
-
-
-
-		if limb == 'right':
-			curr_pos_right = self.y.right.get_pose()
-			print "Current location: ", curr_pos_right.translation
-			print "Approaching desired peg: ",peg 
-			des_pos_right = curr_pos_right
-			des_pos_right.translation = desired_pos
-			self.y.right.goto_pose(des_pos_right,False,True,False)
-			time.sleep(5)
-			print "Current location after moving: ", self.y.right.get_pose().translation
-
-
-#########################################################################################################################
-#Transfer-Approach
-
-class S3:
-
-	def __init__(self):
-
-		# self.y=YuMiRobot(include_right=True, log_state_histories=True, log_pose_histories=True)
-		global y
-		self.y = y
-		#setup the ool distance for the surgical grippers
-		# ORIGINAL GRIPPER TRANSFORM IS tcp2=RigidTransform(translation=[0, 0, 0.156], rotation=[[ 1. 0. 0.] [ 0. 1. 0.] [ 0. 0. 1.]])
-
-		DELTARIGHT=RigidTransform(translation=[0, 0, 0.205], rotation=[1, 0, 0, 0])
-		DELTALEFT=RigidTransform(translation=[0, 0, 0.205], rotation=[1, 0, 0, 0]) #old version version is 0.32
-		self.y.left.set_tool(DELTALEFT)
-		self.y.right.set_tool(DELTARIGHT)
-		self.y.set_v(40)
-		self.y.set_z('z100')
-
-
-
-		self.init_pose_left=self.y.left.get_pose()
-		self.init_pose_right=self.y.right.get_pose()
-		self.offset = 0.0040
-		
-		
-	def left_close(self):
-		self.y.left.close_gripper(force=2,wait_for_res=False)
-	
-	def left_open(self):
-		self.y.left.move_gripper(0.005)
-	
-	def right_close(self):
-		self.y.right.close_gripper(force=2,wait_for_res=False)
-
-	def right_open(self):
-		self.y.right.move_gripper(0.005)
-
-
-	
-
-
-	def surgeme3(self,desired_pos):
-
-		curr_pos_left = self.y.left.get_pose()
-		des_pos_left = curr_pos_left 
-		des_pos_left.translation[1] = desired_pos[1] 
-
-		curr_pos_right = self.y.right.get_pose()
-		des_pos_right = curr_pos_right
-		des_pos_right.translation[1] = desired_pos[1] -  self.offset
-		print "Moved to Transfer Approach "
-		#self.y.goto_pose_sync(des_pos_left, des_pos_right)
-		self.y.right.goto_pose(des_pos_right,False,True,False)
-		self.y.left.goto_pose(des_pos_left,False,True,False)
-
-
-
-#########################################################################################################################
-# Transfer - Transfer
-class S4:
-
-	def __init__(self):
-
-		# self.y=YuMiRobot(include_right=True, log_state_histories=True, log_pose_histories=True)
-		global y
-		self.y = y
-		#setup the ool distance for the surgical grippers
-		# ORIGINAL GRIPPER TRANSFORM IS tcp2=RigidTransform(translation=[0, 0, 0.156], rotation=[[ 1. 0. 0.] [ 0. 1. 0.] [ 0. 0. 1.]])
-
-		DELTARIGHT=RigidTransform(translation=[0, 0, 0.205], rotation=[1, 0, 0, 0])
-		DELTALEFT=RigidTransform(translation=[0, 0, 0.205], rotation=[1, 0, 0, 0]) #old version version is 0.32
-		self.y.left.set_tool(DELTALEFT)
-		self.y.right.set_tool(DELTARIGHT)
-		self.y.set_v(40)
-		self.y.set_z('z100')
-
-
-
-		self.init_pose_left=self.y.left.get_pose()
-		self.init_pose_right=self.y.right.get_pose()
-		self.offset = 0.1075
-		
-		
-	def left_close(self):
-		self.y.left.close_gripper(force=2,wait_for_res=False)
-	
-	def left_open(self):
-		self.y.left.move_gripper(0.005)
-	
-	def right_close(self):
-		self.y.right.close_gripper(force=2,wait_for_res=False)
-
-	def right_open(self):
-		self.y.right.move_gripper(0.005)
-
-
-	
-
-
-	def surgeme4(self,trans):
-
-		if trans == 'l-r':
 			self.right_open()
 			time.sleep(2)
 			self.right_close()
 			time.sleep(2)
 			self.left_open()
-			print "Transfer Complete",trans
-
-
-		if trans == 'r-l':
+			print "Transfer Complete",limb
+		else:
 			self.left_open()
 			time.sleep(2)
 			self.left_close()
 			time.sleep(2)
 			self.right_open()
-			print "Transfer Complete",trans			
+			print "Transfer Complete",limb	
+
+	def surgeme6(self,movetodelta,limb): #Approach Align and drop point 
+
+		arm = self.y.right if limb == 'left' else self.y.left
+		arm.goto_pose_delta([movetodelta[0],movetodelta[1],0])
+		time.sleep(2)
 
 
-#########################################################################################################################
-#Approach for Drop
-class S5:
-
-	def __init__(self):
-
-		global y
-		self.y = y
-		#setup the ool distance for the surgical grippers
-		# ORIGINAL GRIPPER TRANSFORM IS tcp2=RigidTransform(translation=[0, 0, 0.156], rotation=[[ 1. 0. 0.] [ 0. 1. 0.] [ 0. 0. 1.]])
-
-		DELTARIGHT=RigidTransform(translation=[0, 0, 0.205], rotation=[1, 0, 0, 0])
-		DELTALEFT=RigidTransform(translation=[0, 0, 0.205], rotation=[1, 0, 0, 0]) #old version version is 0.32
-		self.y.left.set_tool(DELTALEFT)
-		self.y.right.set_tool(DELTARIGHT)
-		self.y.set_v(40)
-		self.y.set_z('z100')
-
-
-
-		self.init_pose_left=self.y.left.get_pose()
-		self.init_pose_right=self.y.right.get_pose()
-		#self.offset_thresh = [0,0,random.uniform(0.005,0.01)]
-		self.offset_thresh = [0,0,0]  
-		
-	def ret_to_neutral(self,limb):
-
-		if limb == 'left':
-			curr_pos_left = self.y.left.get_pose()
-			des_pos_left = curr_pos_left
-			des_pos_left.translation = [0.33670002,0.11435001,0.10492]
-						# des_pos_left.translation = [0.33670002,0.109,0.10492]
-			des_pos_left.rotation = [[-0.39892747,-0.82643495 ,0.39731869], [-0.72430491, 0.01826895 ,-0.68923773], [ 0.56235155 ,-0.56273574 ,-0.60587888]]
-
-			self.y.left.goto_pose(des_pos_left,False,True,False)
-			#time.sleep(5)
-			print "Moved to neutral "
-
-
-
-		if limb == 'right':
-			curr_pos_right = self.y.right.get_pose()
-			des_pos_right = curr_pos_right
-			des_pos_right.translation = [ 0.34570002, -0.08536001 , 0.1135]
-			des_pos_right.rotation = [[-0.2283057  , 0.88719064 , 0.40096044], [ 0.69851396, -0.13761998 , 0.70223855], [ 0.67819964 , 0.44040153 ,-0.58829562]]
-			self.y.right.goto_pose(des_pos_right,False,True,False)
-			print "Moved to neutral "
-
-		if limb == 'both':#not working 
-			curr_pos_left = self.y.left.get_pose()
-			des_pos_left = curr_pos_left
-			des_pos_left.translation = [0.33670002,0.11435001,0.10492]
-			des_pos_left.rotation = [[-0.39892747,-0.82643495 ,0.39731869], [-0.72430491, 0.01826895 ,-0.68923773], [ 0.56235155 ,-0.56273574 ,-0.60587888]]
-
-			curr_pos_right = self.y.right.get_pose()
-			des_pos_right = curr_pos_right
-			des_pos_right.translation = [ 0.33832002, -0.08536001 , 0.10328]
-			des_pos_right.rotation = [[-0.2283057  , 0.88719064 , 0.40096044], [ 0.69851396, -0.13761998 , 0.70223855], [ 0.67819964 , 0.44040153 ,-0.58829562]]
-			print "Moved to neutral "
-			self.y.goto_pose_sync(des_pos_left, des_pos_right)
-
-
-	def surgeme5(self,peg,desired_pos,limb):
-
-		if limb == 'left':
-			curr_pos_left = self.y.left.get_pose()
-			print "Current location: ", curr_pos_left.translation
-			print "Approaching desired peg: ",peg 
-			des_pos_left = curr_pos_left
-			#print "Desired_POS",desired_pos
-			desired_pos = desired_pos + self.offset_thresh
-			des_pos_left.translation = desired_pos
-			#print "DES",des_pos_left
-			self.y.left.goto_pose(des_pos_left,False,True,False)
-			time.sleep(5)
-
-			curr_pos_left = self.y.left.get_pose()
-			print "Current location after moving: ", curr_pos_left.translation
-
-
-
-		if limb == 'right':
-			curr_pos_right = self.y.right.get_pose()
-			print "Current location: ", curr_pos_right.translation
-			print "Approaching desired peg: ",peg 
-			des_pos_right = curr_pos_right
-			desired_pos = desired_pos + self.offset_thresh
-			des_pos_right.translation = desired_pos
-			self.y.right.goto_pose(des_pos_right,False,True,False)
-			time.sleep(5)
-			print "Current location after moving: ", self.y.right.get_pose().translation
+	def surgeme7(self,limb): #Drop
+		z=0.025
+		arm = self.y.right if limb == 'left' else self.y.left
+		curr_pos = arm.get_pose()
+		delta_z=z-curr_pos.translation[2]
+		arm.goto_pose_delta([0,0,delta_z])
+		time.sleep(2)
+		self.right_open()
+		time.sleep(1)
+		arm.goto_pose_delta([0,0,-delta_z])
+		# print "Shuting yumi"
+		# self.y.stop()
+##########################################################################################################################

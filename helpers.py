@@ -253,3 +253,65 @@ def create_bbox_rob_points(bbox,z):
     pts.append(c)
     pts.append(d)
     return np.array(pts)
+
+# GIven corner points get the center of triangle
+def get_center_triangle(corner_points):
+
+    A = corner_points[0]
+    B = corner_points[1]
+    C = corner_points[2]
+
+    Cx = (A[0]+B[0]+C[0])/3
+    Cy = (A[1]+B[1]+C[1])/3
+    center = np.array([Cx,Cy])
+    return center
+
+
+def min_dist_robot2points(rob,pts,cpts ):
+
+    dist = []
+    for i in pts:
+        dist.append(np.linalg.norm(i - rob))
+    min_pt = np.argmin(dist)
+
+    distc = []
+    for i in cpts:
+        distc.append(np.linalg.norm(i - rob))
+    min_ptc = np.argmin(distc)
+    # print min_pt
+    return pts[min_pt],min_pt,cpts[min_ptc],min_ptc
+
+
+def min_dist_robot2drop_pt(rob,cpts ):
+
+    distc = []
+    for i in cpts:
+        distc.append(np.linalg.norm(i - rob))
+    min_ptc = np.argmin(distc)
+    # print min_pt
+    return cpts[min_ptc],min_ptc
+
+
+
+def get_max_depth(depth_mat):
+
+######### Get the max depth index value within a given ROI ############
+    max_depth = np.amin(depth_mat)
+    if max_depth < 0.3:
+        print("Changing Depth")
+        max_depth = 0.33
+    return max_depth
+
+def get_average_depth(depth_mat):
+######### Get the max depth index value within a given ROI ############
+    mean_depth = np.mean(depth_mat)
+    return mean_depth
+
+def get_min_depth(depth_mat):
+
+######### Get the max depth index value within a given ROI ############
+    min_depth = np.amax(depth_mat)
+    if min_depth > 0.36:
+        print("Changing Depth")
+        min_depth = 0.35
+    return min_depth

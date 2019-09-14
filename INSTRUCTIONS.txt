@@ -1,0 +1,27 @@
+ 1)roslaunch realsense2_camera rs_camera.launch filters:=pointcloud align_depth:=true
+2)on the other computer-->
+ 2.1) roslaunch  repub.py
+ 2.2) roslauch darknet
+ 2.3) rosrun yolo_track.py
+ 2.4) run test.py (maskRCNN) - THIS MUST BE done last because it thakes the most RAM
+
+3) Back at tje isat lab..
+rostopic list: (YOU SHOULD SEE)
+/darknet_ros/bounding_boxes
+/darknet_ros/check_for_objects/cancel
+/darknet_ros/check_for_objects/feedback
+/darknet_ros/check_for_objects/goal
+/darknet_ros/check_for_objects/result
+/darknet_ros/check_for_objects/status
+/darknet_ros/detection_image
+/darknet_ros/found_object
+/darknet_ros/tracked_bbs
+/masks_t
+
+
+4) RUN:
+python final_execution
+
+
+
+If pole positions are messed up then run yolo_track.py again 
