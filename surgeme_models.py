@@ -44,7 +44,7 @@ class Surgemes:
 		DELTALEFT=RigidTransform(translation=[0, 0, 0.205], rotation=[1, 0, 0, 0]) #old version version is 0.32
 		self.y.left.set_tool(DELTALEFT)
 		self.y.right.set_tool(DELTARIGHT)
-		self.y.set_v(40)
+		self.y.set_v(80)
 		self.y.set_z('z100')
 
 
@@ -55,7 +55,7 @@ class Surgemes:
 		self.offset_thresh = [0,0,0]
 
 	def ret_to_neutral(self,limb):
-		self.y.set_v(40)
+		self.y.set_v(80)
 		arm = self.y.right if limb == 'right' else self.y.left
 
 		curr_pos_left = arm.get_pose()
@@ -67,7 +67,7 @@ class Surgemes:
 
 
 	def ret_to_neutral_angles(self,limb):
-		self.y.set_v(40)
+		self.y.set_v(80)
 		arm = self.y.right if limb == 'right' else self.y.left
 
 		limb_angles = 'left_angles' if limb == 'left' else 'right_angles'
@@ -109,7 +109,7 @@ class Surgemes:
 			arm_scale = interp1d([0,180],[-130,offset]) 
 			peg_scale = interp1d([0,offset],[-130,offset])
 		curr_angles = temp.joints
-		print("Curr Angles before turning joint 5:",curr_angles)
+		# print("Curr Angles before turning joint 5:",curr_angles)
 		curr_j5 = curr_angles[5]
 		print ("Joint 5 degrees ",curr_j5)
 		if (curr_j5) - (arm_scale(j_val)) > 0 :
@@ -120,43 +120,46 @@ class Surgemes:
 			diff_angle = (curr_j5)-(arm_scale(j_val))
 			curr_angles[5] = curr_j5+abs(diff_angle)
 			# print ("Adding diff value ")
-		print("Curr Angles after getting turn value for  joint 5:",curr_angles)
+		# print("Curr Angles after getting turn value for  joint 5:",curr_angles)
 		# a = input("Are you satsis")
 		temp.joints = curr_angles
 		arm.goto_state(temp) 
-		time.sleep(2)
+		time.sleep(0.5)
 
 	def surgeme1(self,peg,desired_pos,limb):
+		self.y.set_v(80)
 		arm = self.y.right if limb == 'right' else self.y.left
 		curr_pos = arm.get_pose()
 		print "Current location: ", curr_pos.translation
-		print "Approaching desired peg: ",peg
+		# print "Approaching desired peg: ",peg
 		des_pos = curr_pos
 		#print "Desired_POS",desired_pos
 		desired_pos = desired_pos + self.offset_thresh
 		des_pos.translation = desired_pos
 		#print "DES",des_pos_left
 		arm.goto_pose(des_pos,False,True,False)
-		time.sleep(5)
+		time.sleep(0.2)
 
 		curr_pos = arm.get_pose()
 		print "Current location after moving: ", curr_pos.translation
-		time.sleep(3)
+		
 		
 
 	def surgeme2(self,peg,desired_pos,limb):
-		self.y.set_v(10)	
+		self.y.set_v(25)	
 		arm = self.y.right if limb == 'right' else self.y.left
 		curr_pos = arm.get_pose()
+
 		print "Current location: ", curr_pos.translation
 		print "Approaching desired peg: ",peg
 		des_pos = curr_pos
+		print("des pos",des_pos)
 		#print "Desired_POS",desired_pos
 		# desired_pos = desired_pos + self.offset_thresh
 		des_pos.translation = desired_pos
 		#print "DES",des_pos_left
 		arm.goto_pose(des_pos,False,True,False)
-		time.sleep(10)
+		time.sleep(3)
 
 		curr_pos = arm.get_pose()
 		print "Current location after moving: ", curr_pos.translation
@@ -167,6 +170,7 @@ class Surgemes:
 
 
 	def surgeme3(self,peg,limb):#lift is hardcoded
+		self.y.set_v(80)
 		arm = self.y.right if limb == 'right' else self.y.left
 		curr_pos = arm.get_pose()
 		print "Current location: ", curr_pos.translation
@@ -178,18 +182,15 @@ class Surgemes:
 		des_pos.translation = desired_pos
 		#print "DES",des_pos_left
 		arm.goto_pose(des_pos,False,True,False)
-		time.sleep(5)
-
-		
-
-
 		time.sleep(1)
+
 		# print "Shuting yumi"
 		# self.y.stop()
 		
 
 
 	def surgeme4(self, limb='left'):#Tranfer Approach
+		self.y.set_v(80)
 		oposite_limb = 'right' if limb == 'left' else 'left'
 		oposite_limb_angles = 'right_angles' if limb == 'left' else 'left_angles'
 		limb_angles = 'left_angles' if limb == 'left' else 'right_angles'
@@ -200,39 +201,46 @@ class Surgemes:
 		# print "Current location after returning to neutral: ", curr_pos
 		# print "Shuting yumi"
 		# self.y.stop()
-		oposite_arm.open()
+		oposite_arm.move_gripper(0.006)
 		curr_pos_limb = arm.get_state()
 		des_pos_limb = curr_pos_limb 
 		if limb == 'left':
 			des_pos_limb.joints = self.transfer_pose_high_left[limb_angles].joints
-			des_pos_oposite_limb.joints = self.transfer_pose_high_left[oposite_limb_angles].joints
 		else:
 			des_pos_limb.joints = self.transfer_pose_high_right[limb_angles].joints
-			des_pos_oposite_limb.joints = self.transfer_pose_high_right[oposite_limb_angles].joints
 		arm.goto_state(des_pos_limb)
 
 		curr_pos_oposite_limb = oposite_arm.get_state()
 		des_pos_oposite_limb = curr_pos_oposite_limb
+
+		if limb == 'left':
+			des_pos_oposite_limb.joints = self.transfer_pose_high_left[oposite_limb_angles].joints
+		else:
+			des_pos_oposite_limb.joints = self.transfer_pose_high_right[oposite_limb_angles].joints
+
 		oposite_arm.goto_state(des_pos_oposite_limb)
 
-		time.sleep(5)
+		time.sleep(1)
 		################################ DO Transer pose lose #######
 
 		curr_pos_limb = arm.get_state()
 		des_pos_limb = curr_pos_limb 
 		if limb == 'left':
 			des_pos_limb.joints = self.transfer_pose_low_left[limb_angles].joints
-			des_pos_oposite_limb.joints = self.transfer_pose_low_left[oposite_limb_angles].joints
 		else:
 			des_pos_limb.joints = self.transfer_pose_low_right[limb_angles].joints
-			des_pos_oposite_limb.joints = self.transfer_pose_low_right[oposite_limb_angles].joints
 		arm.goto_state(des_pos_limb)
 
 		curr_pos_oposite_limb = oposite_arm.get_state()
 		des_pos_oposite_limb = curr_pos_oposite_limb
+		if limb == 'left':
+			des_pos_oposite_limb.joints = self.transfer_pose_low_left[oposite_limb_angles].joints
+		else:
+			des_pos_oposite_limb.joints = self.transfer_pose_low_right[oposite_limb_angles].joints
+
 		oposite_arm.goto_state(des_pos_oposite_limb)
 
-		time.sleep(5)
+		time.sleep(1)
 		# print "Shuting yumi"
 		# self.y.stop()
 		
@@ -268,38 +276,40 @@ class Surgemes:
 		# time.sleep(3)
 
 	def surgeme5(self,limb='left'):
-
+		self.y.set_v(80)
 		if limb == 'left':
 			self.right_open()
-			time.sleep(2)
+			time.sleep(0.5)
 			self.right_close()
-			time.sleep(2)
+			time.sleep(0.5)
 			self.left_open()
 			print "Transfer Complete",limb
 		else:
 			self.left_open()
-			time.sleep(2)
+			time.sleep(0.5)
 			self.left_close()
-			time.sleep(2)
+			time.sleep(0.5)
 			self.right_open()
 			print "Transfer Complete",limb	
 
-	def surgeme6(self,movetodelta,limb): #Approach Align and drop point 
 
+	def surgeme6(self,movetodelta,limb): #Approach Align and drop point 
+		self.y.set_v(80)
 		arm = self.y.right if limb == 'left' else self.y.left
 		arm.goto_pose_delta([movetodelta[0],movetodelta[1],0])
-		time.sleep(2)
+		time.sleep(1)
 
 
 	def surgeme7(self,limb): #Drop
+		self.y.set_v(20)
 		z=0.025
 		arm = self.y.right if limb == 'left' else self.y.left
 		curr_pos = arm.get_pose()
 		delta_z=z-curr_pos.translation[2]
 		arm.goto_pose_delta([0,0,delta_z])
-		time.sleep(2)
-		self.right_open()
-		time.sleep(1)
+		time.sleep(1.5)
+		arm.move_gripper(0.007)
+		time.sleep(1.5)
 		arm.goto_pose_delta([0,0,-delta_z])
 		# print "Shuting yumi"
 		# self.y.stop()
