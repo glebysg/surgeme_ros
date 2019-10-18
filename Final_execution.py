@@ -407,7 +407,7 @@ class Scene():
 if __name__ == '__main__':
     # Start Robot Environment
     # Start surgemes class and open grippers and take robot to neutral positions
-    execution = Surgemes()
+    execution = Surgemes(strategy='splines')
     time.sleep(1)
     # limb = input('Ente the limb : ')
     # limb = 'right'
@@ -490,7 +490,8 @@ if __name__ == '__main__':
         drop_pole_num = input("Enter Destination: ")
         drop_pole_num = int(drop_pole_num)-1
         # drop_pole_num = input_data[x,2]-1
-        sequence = batches[count]
+        # sequence = batches[count]
+        sequence = [0]
         print("Surgeme sequence: ",sequence)
         e = input("Shall I continue : ************** : ")
 
@@ -536,6 +537,7 @@ if __name__ == '__main__':
 
             if surgeme_no == 1:
                 execution.S1(corner,g_angle,limb)#Perform Approach
+                print("Performed approach")
             if surgeme_no == 2:
                 execution.S2(grasp,limb)#Perform Grasp
             if surgeme_no == 3:

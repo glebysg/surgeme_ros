@@ -1,9 +1,13 @@
 from surgeme_models import *
+from surgeme_splines import Surgeme_Splines
 import time
 
 class Surgemes():
     def __init__(self, robot='yumi', strategy='model'):
-        self.execution = Surgeme_Models()
+        if strategy=='model':
+            self.execution = Surgeme_Models()
+        else:
+            self.execution = Surgeme_Splines()
 
     ################# Add grippers and neutral and current pose  
     def S1(self,calign,g_angle,limb):
