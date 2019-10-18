@@ -22,7 +22,7 @@ y=None
 
 ##########################################################################################################################
 
-class Surgemes:
+class Surgeme_Models():
 
 	def __init__(self):
 		self.y = YuMiRobot(include_right=True, log_state_histories=True, log_pose_histories=True)
@@ -73,7 +73,7 @@ class Surgemes:
 		limb_angles = 'left_angles' if limb == 'left' else 'right_angles'
 
 		curr_pos_limb = arm.get_state()
-		des_pos_limb = curr_pos_limb 
+		des_pos_limb = curr_pos_limb
 		des_pos_limb.joints = self.neutral_angles[limb_angles].joints
 		arm.goto_state(des_pos_limb)
 		print "Moved to neutral :)"
