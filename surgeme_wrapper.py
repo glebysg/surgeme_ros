@@ -4,21 +4,22 @@ import time
 
 class Surgemes():
     def __init__(self, robot='yumi', strategy='model'):
+	self.strategy = strategy
+	self.robot = robot
         if strategy=='model':
             self.execution = Surgeme_Models()
         else:
             self.execution = Surgeme_Splines()
 
-    ################# Add grippers and neutral and current pose  
-    def S1(self,calign,g_angle,limb):
-        self.execution.joint_orient(limb,g_angle)
-        self.execution.surgeme1(1,calign,limb)
+    ################# Add grippers and neutral and current pose
+    def S1(self,final_pose,g_angle,limb):
+        self.execution.surgeme1(1,final_pose,limb)
         time.sleep(1)
         print("Finished Approach")
         time.sleep(2)
 
-    def S2(self,align,limb):
-        self.execution.surgeme2(1,align,limb)
+    def S2(self,final_pose,limb):
+        self.execution.surgeme2(1,final_pose,limb)
         print("Finished Grasping")
 
     def S3(self,limb):

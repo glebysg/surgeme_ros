@@ -66,7 +66,7 @@ ml_models = []
         # reg = pkl.load(model_name)
         # ml_models.append(reg)
 for i,arm,model in zip(surgemes,arms,models):
-    with open('models/S'+str(1)+'_left_'+model, 'rb') as model_name:
+    with open('models/S'+str(1)+'_left_'+model+'_'+str(spline_degree), 'rb') as model_name:
         reg = pkl.load(model_name)
         ml_models.append(reg)
 

@@ -152,7 +152,7 @@ x_train, x_test, y_train, y_test = train_test_split(
 reg = LinearRegression().fit(x_train, y_train[:,:coeff_len])
 print "REGRESSION SCORE", reg.score(x_train, y_train[:,:coeff_len])
 if save_model:
-    with open('models/S'+str(surgeme_number)+"_"+arm+'_regression', 'wb') as model_name:
+    with open('models/S'+str(surgeme_number)+"_"+arm+'_regression'+'_'+str(spline_degree), 'wb') as model_name:
         pkl.dump(reg,model_name)
 
 # TRY WITH A NN_REGRESSION
@@ -190,7 +190,7 @@ for epoch in range(40):
     if (epoch % 20 == 0.0):
         print("Epoch {} - loss: {}".format(epoch, output))
 
-torch.save(net,'models/S'+str(surgeme_number)+"_"+arm+'_nn')
+torch.save(net,'models/S'+str(surgeme_number)+"_"+arm+'_nn'+'_'+str(spline_degree))
 
 ###############################################################
 ###################### testing ################################

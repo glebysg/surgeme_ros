@@ -142,11 +142,9 @@ class Surgeme_Models():
 
 		curr_pos = arm.get_pose()
 		print "Current location after moving: ", curr_pos.translation
-		
-		
 
 	def surgeme2(self,peg,desired_pos,limb):
-		self.y.set_v(25)	
+		self.y.set_v(25)
 		arm = self.y.right if limb == 'right' else self.y.left
 		curr_pos = arm.get_pose()
 
@@ -168,7 +166,6 @@ class Surgeme_Models():
 		else:
 			self.right_close()
 
-
 	def surgeme3(self,peg,limb):#lift is hardcoded
 		self.y.set_v(80)
 		arm = self.y.right if limb == 'right' else self.y.left
@@ -178,7 +175,7 @@ class Surgeme_Models():
 		des_pos = curr_pos
 		#print "Desired_POS",desired_pos
 		desired_pos = des_pos.translation
-		desired_pos[2] = 0.05 
+		desired_pos[2] = 0.05
 		des_pos.translation = desired_pos
 		#print "DES",des_pos_left
 		arm.goto_pose(des_pos,False,True,False)
@@ -186,8 +183,6 @@ class Surgeme_Models():
 
 		# print "Shuting yumi"
 		# self.y.stop()
-		
-
 
 	def surgeme4(self, limb='left'):#Tranfer Approach
 		self.y.set_v(80)
