@@ -6,13 +6,14 @@ class Surgemes():
     def __init__(self, robot='yumi', strategy='model'):
 	self.strategy = strategy
 	self.robot = robot
-        if strategy=='model':
+        if self.strategy=='model':
             self.execution = Surgeme_Models()
         else:
             self.execution = Surgeme_Splines()
 
     ################# Add grippers and neutral and current pose
     def S1(self,final_pose,g_angle,limb):
+        self.execution.joint_orient(limb,g_angle)
         self.execution.surgeme1(1,final_pose,limb)
         time.sleep(1)
         print("Finished Approach")
@@ -24,7 +25,8 @@ class Surgemes():
 
     def S3(self,limb):
         self.execution.surgeme3(1,limb)
-        print("FInished Lift")
+        print("Finished Lift")
+        # if self.strategy == 'model':
         self.execution.ret_to_neutral_angles(limb)
 
     def S4(self,limb):
@@ -61,6 +63,3 @@ class Surgemes():
             self.execution.left_open()
         else:
             self.execution.right_open()
-
-
-
