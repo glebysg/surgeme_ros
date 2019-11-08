@@ -20,6 +20,11 @@ In another tab in the same workspace
       source maskenv/bin/activate
       python test.py (maskRCNN) - THIS MUST BE done last because it thakes the most RAM (Mrcnn_ws/src/) ?(setup virtual environment called maskenv (use workon))
 
+ 2.5) cd ~/wsps/mrcnn_ws/src/Mask_RCNN
+      source ../../devel/setup.bash
+      source maskenv/bin/activate
+      python sub_masks.py
+
 3) Back at tje isat lab..
 rostopic list: (YOU SHOULD SEE)
 /darknet_ros/bounding_boxes

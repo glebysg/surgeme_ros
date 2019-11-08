@@ -70,6 +70,10 @@ class Surgeme_Splines():
         # Load Neutral Poses
         self.neutral_pose = load_pose_by_path('data/neutral_pose_peg.txt')
         self.neutral_angles = load_pose_by_path('data/neutral_angles_pose_peg1.txt')
+        self.transfer_pose_high_left = load_pose_by_path('data/transfer_pose_high.txt')
+        self.transfer_pose_low_left = load_pose_by_path('data/transfer_pose_low.txt')
+        self.transfer_pose_high_right = load_pose_by_path('data/transfer_pos_high_right_to_left.txt')
+        self.transfer_pose_low_right = load_pose_by_path('data/transfer_pos_low_right_to_left.txt')
 
     def load_model(self, surgeme_num, arm, model, degree=3):
         with open(self.model_path+'/S'+str(surgeme_num)+'_left_'+model+'_'+str(degree), 'rb') as model_name:
@@ -109,6 +113,7 @@ class Surgeme_Splines():
         target_pose = curr_pos
         target_pose.joints = self.neutral_angles[joint_angles].joints
         arm.goto_state(target_pose)
+        time.sleep(1)
         print "Moved to neutral :)"
 
     def joint_orient(self,limb,j_val,offset = 150):
@@ -136,9 +141,9 @@ class Surgeme_Splines():
         arm.goto_state(arm_state)
         time.sleep(0.5)
 
-    def execute_spline(self, s_init, s_end):
+    def execute_spline(self, s_init, s_end, arm):
         # go to the init pose
-        self.arm.goto_pose(s_init,False,True,False)
+        arm.goto_pose(s_init,False,True,False)
         inputs = [s_init.translation]
         inputs.append(s_end.translation)
         inputs = np.array(inputs).reshape(1,-1)
@@ -180,7 +185,7 @@ class Surgeme_Splines():
                 target_pose.translation[0] = x_coord
                 target_pose.translation[1] = y_coord
                 target_pose.translation[2] = z_coord
-                self.arm.goto_pose(target_pose,False,True,False)
+                arm.goto_pose(target_pose,False,True,False)
 
     def surgeme1(self,peg,desired_pos,limb):
         self.y.set_v(80)
@@ -193,7 +198,7 @@ class Surgeme_Splines():
         # Load the model
         self.load_model(1, limb, 'regression')
         # Execute the spline
-        self.execute_spline(init_pose, final_pose)
+        self.execute_spline(init_pose, final_pose, self.arm)
         time.sleep(0.2)
 
 
@@ -210,7 +215,7 @@ class Surgeme_Splines():
         # Load the model
         self.load_model(2, limb, 'regression')
         # Execute the spline
-        self.execute_spline(init_pose, final_pose)
+        self.execute_spline(init_pose, final_pose, self.arm)
         time.sleep(3)
         # Close the gripper
         if limb == 'left':
@@ -220,7 +225,7 @@ class Surgeme_Splines():
 
     def surgeme3(self,peg,limb):#lift is hardcoded
 	self.y.set_v(80)
-	arm = self.y.right if limb == 'right' else self.y.left
+	self.arm = self.y.right if limb == 'right' else self.y.left
         # Get init and final pose
         init_pose = self.arm.get_pose()
         print "Init location: ", init_pose.translation
@@ -230,7 +235,150 @@ class Surgeme_Splines():
         # Load the model
         self.load_model(3, limb, 'regression')
         # Execute the spline
-        self.execute_spline(init_pose, final_pose)
+        self.execute_spline(init_pose, final_pose, self.arm)
 	#print "Desired_POS",desired_pos
 	time.sleep(1)
 
+
+    def surgeme4(self, limb='left'):#Tranfer Approach
+        self.y.set_v(80)
+        opposite_limb = 'right' if limb == 'left' else 'left'
+        opposite_limb_angles = 'right_angles' if limb == 'left' else 'left_angles'
+        limb_angles = 'left_angles' if limb == 'left' else 'right_angles'
+        # self.y.set_v(40)
+        arm = self.y.right if limb == 'right' else self.y.left
+        opposite_arm = self.y.right if limb == 'left' else self.y.left
+        curr_pos = arm.get_pose()
+        # print "Current location after returning to neutral: ", curr_pos
+        # print "Shuting yumi"
+        # self.y.stop()
+        opposite_arm.move_gripper(0.006)
+        curr_pos_limb = arm.get_state()
+        des_pos_limb = curr_pos_limb
+        if limb == 'left':
+                des_pos_limb.joints = self.transfer_pose_high_left[limb_angles].joints
+        else:
+                des_pos_limb.joints = self.transfer_pose_high_right[limb_angles].joints
+        arm.goto_state(des_pos_limb)
+
+        curr_pos_opposite_limb = opposite_arm.get_state()
+        des_pos_opposite_limb = curr_pos_opposite_limb
+
+        if limb == 'left':
+                des_pos_opposite_limb.joints = self.transfer_pose_high_left[opposite_limb_angles].joints
+        else:
+                des_pos_opposite_limb.joints = self.transfer_pose_high_right[opposite_limb_angles].joints
+
+        opposite_arm.goto_state(des_pos_opposite_limb)
+
+        time.sleep(1)
+        ######## Do Transer pose #######
+        curr_pos_limb = arm.get_state()
+        des_pos_limb = curr_pos_limb
+        if limb == 'left':
+                des_pos_limb.joints = self.transfer_pose_low_left[limb_angles].joints
+        else:
+                des_pos_limb.joints = self.transfer_pose_low_right[limb_angles].joints
+        arm.goto_state(des_pos_limb)
+
+        curr_pos_opposite_limb = opposite_arm.get_state()
+        des_pos_opposite_limb = curr_pos_opposite_limb
+        if limb == 'left':
+                des_pos_opposite_limb.joints = self.transfer_pose_low_left[opposite_limb_angles].joints
+        else:
+                des_pos_opposite_limb.joints = self.transfer_pose_low_right[opposite_limb_angles].joints
+
+        opposite_arm.goto_state(des_pos_opposite_limb)
+
+        time.sleep(1)
+    # def surgeme4(self, limb='left'):#Tranfer Approach
+        # # init of armi, -65.37s and angle flangs
+        # self.y.set_v(80)
+	# self.arm = self.y.right if limb == 'right' else self.y.left
+        # self.opposite_arm = self.y.right if limb == 'left' else self.y.left
+        # opposite_limb = 'right' if limb == 'left' else 'left'
+        # # Get init, final poses an prepare grippers
+        # init_pose = self.arm.get_pose()
+        # opposite_init_pose = self.opposite_arm.get_pose()
+        # self.opposite_arm.move_gripper(0.006)
+        # # First we move the opposite arm
+        # final_pose = copy.deepcopy(init_pose)
+        # opposite_final_pose = copy.deepcopy(opposite_init_pose)
+        # if limb == 'left':
+            # arm_translation = np.array([0.32971,0.0248,0.09849])
+            # opposite_arm_translation = np.array([0.31442, -0.0163, 0.12826])
+        # else:
+            # # TODO: measure the actial ones
+            # pass
+        # final_pose.translation = arm_translation
+        # opposite_final_pose.translation = opposite_arm_translation
+        # # Load and execute for the opposite limb
+        # self.load_model(4, opposite_limb, 'regression')
+        # self.execute_spline(opposite_init_pose, opposite_final_pose, self.opposite_arm)
+        # time.sleep(2)
+        # # Load and execute for the main limb
+        # self.y.set_v(20)
+        # self.load_model(5, limb, 'regression')
+        # self.execute_spline(init_pose, final_pose, self.arm)
+        # time.sleep(2)
+        # # Go to the grasp point
+        # opposite_final_pose_low = copy.deepcopy(opposite_final_pose)
+        # # add offset to the low pose
+        # # TODO: do it for the opposite case
+        # opposite_final_pose_low.translation += np.array([0.02,0.05,-0.025])
+        # self.load_model(5, opposite_limb, 'regression')
+        # self.execute_spline(opposite_final_pose, opposite_final_pose_low, self.opposite_arm)
+        # ################################ DO Transer pose lose #######
+        # time.sleep(1)
+
+    def surgeme5(self,limb='left'):
+        self.y.set_v(80)
+        if limb == 'left':
+            self.right_open()
+            time.sleep(0.5)
+            self.right_close()
+            time.sleep(0.5)
+            self.left_open()
+            print "Transfer Complete",limb
+        else:
+            self.left_open()
+            time.sleep(0.5)
+            self.left_close()
+            time.sleep(0.5)
+            self.right_open()
+            print "Transfer Complete",limb
+
+
+    def surgeme6(self,movetodelta,limb): #Approach Align and drop point 
+	self.y.set_v(80)
+	self.opposite_arm = self.y.right if limb == 'left' else self.y.left
+        init_pose = self.opposite_arm.get_pose()
+        final_pose = copy.deepcopy(init_pose)
+	final_pose.translation += np.array([movetodelta[0],movetodelta[1],0])
+        # Load the model
+        self.load_model(6, limb, 'regression')
+        # Execute the spline
+        self.execute_spline(init_pose, final_pose, self.opposite_arm)
+	#print "Desired_POS",desired_pos
+	time.sleep(1)
+
+    def surgeme7(self,limb): #Drop
+        self.y.set_v(20)
+        z=0.025
+        # make it go drop
+	self.opposite_arm = self.y.right if limb == 'left' else self.y.left
+        init_pose = self.opposite_arm.get_pose()
+        final_pose = copy.deepcopy(init_pose)
+        delta_z=z-init_pose.translation[2]
+	final_pose.translation += np.array([0,0,delta_z])
+        # Load the model
+        self.load_model(7, limb, 'regression')
+        # Execute the spline
+        self.execute_spline(init_pose, final_pose, self.opposite_arm)
+        # make it come back up
+        time.sleep(1.5)
+        self.opposite_arm.move_gripper(0.007)
+        time.sleep(1.5)
+        self.opposite_arm.goto_pose_delta([0,0,-delta_z])
+        # print "Shuting yumi"
+        # self.y.stop()

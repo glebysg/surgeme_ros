@@ -491,7 +491,7 @@ if __name__ == '__main__':
         drop_pole_num = int(drop_pole_num)-1
         # drop_pole_num = input_data[x,2]-1
         # sequence = batches[count]
-        sequence = [0, 1, 2]
+        sequence = [0, 1, 2, 3, 4, 5, 6]
         print("Surgeme sequence: ",sequence)
         e = input("Shall I continue : ************** : ")
 
