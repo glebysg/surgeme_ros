@@ -27,19 +27,18 @@ def main():
     global M_left
     global M_right
 
-    world_points=np.array([[0,0,0],
-            [0.08,0,0],
-            [0.16,0,0],
-            [0,0.10,0],
-            [0.08,0.10,0],
-            [0.16,0.10,0],
-            [0,0,-0.0334],
-            [0.08,0,-0.0334],
-            [0.16,0,-0.0334],
-            [0,0.10,-0.0334],
-            [0.08,0.10,-0.0334],
-            [0.16,0.10,-0.0334]])
-    world_points=np.transpose(world_points)
+    # Set the coordinate points in the world
+    selected_coords = np.array([[[0,0,0], [2,2,0], [1,5,0], [5,1,0], [4,3,0], [8,3,0]],
+                       [[4,0,0], [1,2,0], [7,1,0], [3,4,0], [6,5,0], [7,3,0]]])
+    world_points = selected_coords*0.0245
+    # Scale them by the real world chess board size
+    # add the height of theelevated checkered box to the second row of
+    # the workd points:
+    box_height=-0.05562
+    for i in range(len(world_points[1])):
+        world_points[1,i,2] = box_height
+    # get the coordinates to the coorrect shape
+    world_points = world_points.reshape(-1,3).transpose()
 
     pose_left=[]
     pose_right=[]

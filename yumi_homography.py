@@ -126,12 +126,9 @@ def world_to_yumi(vector,yumi_arm):
     #returns the coordinates in the yumi coordinate system
     # each column is one data point
 
-    
-    vector = vector.reshape(-1,1)
     b=vector.shape[1]
     global M_left
     global M_right
-    print M_left
     print(vector.shape)
     poses=np.concatenate((vector,np.ones((1,b))),axis=0)
 
@@ -141,16 +138,7 @@ def world_to_yumi(vector,yumi_arm):
         output=np.dot(np.linalg.inv(M_right),poses)
     return output[:-1,:]
 
-def world_to_yumi_point(point, yumi_arm):
-    # Add a 1 to the pose vector 
-    points=np.concatenate((point,[1]),axis=0)
-    if yumi_arm=="left":
-        world=np.dot(np.linalg.inv(M_left),points)
-        pose = world/world[-1]
-    elif yumi_arm=="right":
-        world=np.dot(np.linalg.inv(M_right),points)
-        pose = world/world[-1]
-    return pose
+
 
 # from https://github.com/matthew-brett/transforms3d/blob/master/original/transformations.py 
 def affine_matrix_from_points(v0, v1, shear=True, scale=True, usesvd=True):

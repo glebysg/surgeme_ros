@@ -28,7 +28,6 @@ import os
 import unittest
 import sys
 import random
-from darknet_ros_msgs.msg import BoundingBoxes
 import IPython
 import rospy
 import cv2
@@ -43,7 +42,6 @@ from sensor_msgs.msg import CameraInfo
 from scipy.spatial import distance
 import math
 from scipy.interpolate import interp1d
-from mrcnn_msgs.msg import ObjMasks
 import matplotlib.pyplot as plt
 
 
@@ -382,3 +380,6 @@ class Surgeme_Splines():
         self.opposite_arm.goto_pose_delta([0,0,-delta_z])
         # print "Shuting yumi"
         # self.y.stop()
+
+    def stop(self):
+        self.y.stop()
