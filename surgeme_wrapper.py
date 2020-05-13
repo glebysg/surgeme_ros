@@ -63,3 +63,6 @@ class Surgemes():
             self.execution.left_open()
         else:
             self.execution.right_open()
+    def stop(self):
+        self.execution.stop()
+

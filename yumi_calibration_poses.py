@@ -25,14 +25,23 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-a', action="store", dest="arm", default="left",
             help="record arm. Possible options: left, right or both")
-    parser.add_argument('-i', action="store", dest="point_id", default="0",
+    parser.add_argument('-i', action="store", dest="point_id", default="0", type=int,
             help="record point. possible options 1 to 12")
     # parser.add_argument('-s', action="store", dest="filename", default="pose",
     #         help="name of the pkl file where the object is recorded")
 
-    args = parser.parse_args()
+    selected_coords = [[0,0], [2,2], [1,5], [5,1], [4,3], [8,3],
+                       [4,0], [1,2], [7,1], [3,4], [6,5], [7,3]]
 
-    print "calibration for arm %s point %s" %(args.arm, args.point_id)
+    args = parser.parse_args()
+    pt_id = args.point_id
+    print "calibration for arm %s, coordinate (%d,%d), id %d:" %(args.arm,
+                    selected_coords[pt_id-1][0], selected_coords[pt_id-1][1], pt_id)
+
+    if pt_id<=6:
+        print("Use the flat level")
+    else:
+        print("Use the raised level")
 
     # point_id = raw_input("Number of point you want to record:")  # Python 2
     # print text
@@ -62,9 +71,6 @@ def main():
     # save pkl object
     with open(filename, "wb") as output_file:
         pkl.dump(poses,output_file)
-
-
-
 
 
 
