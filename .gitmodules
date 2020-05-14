@@ -1,3 +1,3 @@
-[submodule "forward-comm"]
+[submodule "forwardcomm"]
 	path = forwardcomm
 	url = https://github.com/magarwal0205/forward-comm.git
