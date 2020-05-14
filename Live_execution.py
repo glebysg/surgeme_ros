@@ -32,6 +32,7 @@ import math
 import matplotlib.pyplot as plt
 import csv
 from surgeme_wrapper import Surgemes
+from forwardcomm.forward_comm_robot_terminal import robotTerminal
 
 class Scene():
     #######################
@@ -398,11 +399,19 @@ class Scene():
 ######################################################################
 ############################# EXECUTION ##############################
 ######################################################################
-if __name__ == '__main__':
+
+def main():
     # Start Robot Environment
     # Start surgemes class and open grippers and take robot to neutral positions
+    global robTerminal
+    global execution
     execution = Surgemes(strategy='splines')
-    time.sleep(1)
+    robTerminal = robotTerminal(debug = False)
+    while(1):
+        message = robTerminal.getSurgemeMsg()
+        if not(message == "Surgeme Queue Empty") and (len(message)==2):
+            print("Message: \"{0}\" Delay {1}".format(message[0], message[1]))
+            # print("//////////////////////")
     # limb = input('Ente the limb : ')
     # limb = 'right'
     # opposite_limb = 'right' if limb == 'left' else 'left'
@@ -580,8 +589,18 @@ if __name__ == '__main__':
                 # execution.S7(limb,opposite_limb)#Perform Drop
             # stop = input('Do you want to stop: ')
         count = count+1
-    if cv2.waitKey(0) & 0xFF == ord('q'):
+    rospy.spin()
+
+if __name__ == '__main__':
+    global robTerminal
+    global execution
+    try:
+        main()
+    except KeyboardInterrupt:
         cv2.destroyAllWindows()
         execution.stop()
+        robTerminal.closeConnection()
+        del(robTerminal)
+        print("exiting")
         exit(0)
-    rospy.spin()
+
