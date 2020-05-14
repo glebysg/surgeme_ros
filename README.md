@@ -1,9 +1,10 @@
 # surgeme_ros
 ## Project Submodule Download
 * First, clone this repository, along with its submodules:
-git clone --recurse-submodules https://github.com/glebysg/surgeme_ros.git
-* change the name of the folder 'forward-comm' to 'forwardcomm'
-* Open the '.submodules' file and change the value of <em>path=forward-comm</em> to <em>path=forwardcomm</em> 
+git clone https://github.com/glebysg/surgeme_ros.git
+
+* Add the communication submodule 'forwardcomm' at the root of the project's directory:
+git submodule add https://github.com/magarwal0205/forward-comm.git forwardcomm
 
 ## Dependencies
 
