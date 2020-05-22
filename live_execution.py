@@ -6,9 +6,7 @@ import numpy as np
 import copy
 import sys
 import random
-# PUT BACK
-# from darknet_ros_msgs.msg import BoundingBoxes
-# from mrcnn_msgs.msg import ObjMasks
+from darknet_ros_msgs.msg import BoundingBoxes
 from autolab_core import RigidTransform
 from yumipy import YuMiConstants as YMC
 from yumipy import YuMiRobot, YuMiState
@@ -28,6 +26,7 @@ from sensor_msgs.msg import CameraInfo
 from scipy.spatial import distance
 import math
 from scipy.interpolate import interp1d
+from mrcnn_msgs.msg import ObjMasks
 import math
 import matplotlib.pyplot as plt
 import csv
@@ -80,30 +79,38 @@ class Scene():
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
 
-    # PUT BACK
-    # def mask_callback(self,data):
-        # pegs = []
-        # masks = []
-        # for box, mask in zip(data.bbs,data.masks):
-                # pegs.append([box.data[0], box.data[2], box.data[1], box.data[3]])
-                # mask_frame = self.bridge.imgmsg_to_cv2(mask,'passthrough')
-                # mask_frame = cv2.cvtColor(mask_frame,cv2.COLOR_BGR2RGB)
-                # masks.append(mask_frame)
-        # self.pegs = pegs #here saved ROIS of triangles
-        # self.mask_frames = masks
+    def mask_callback(self,data):
+        pegs = []
+        masks = []
+        for box, mask in zip(data.bbs,data.masks):
+                pegs.append([box.data[0], box.data[2], box.data[1], box.data[3]])
+                mask_frame = self.bridge.imgmsg_to_cv2(mask,'passthrough')
+                mask_frame = cv2.cvtColor(mask_frame,cv2.COLOR_BGR2RGB)
+                masks.append(mask_frame)
+        self.pegs = pegs #here saved ROIS of triangles
+        self.mask_frames = masks
+        # mask_img = data.masks
+        # print(mask_img.encoding)
+        # if len(data.masks)>0:
+        #   if len(data.masks[0].data)>0:
+        #       mask_frame = self.bridge.imgmsg_to_cv2(data.masks[0],'passthrough')
+        #       self.mask_frame = cv2.cvtColor(mask_frame,cv2.COLOR_BGR2RGB)
+            # print self.mask_frame.shape
+        # cv2.imshow("MASK",self.mask_frame)
+        # cv2.waitKey(0)
 
-    # PUT BACK
-    # def pole_cb(self,data):
-        # poles = []
-        # count = 0
-        # if len(data.bounding_boxes)>=12:
-            # for pole in data.bounding_boxes:
-                # if pole.Class == "pole"+str(count):
-                    # poles.append([(pole.xmin+pole.xmax)/2,(pole.ymin+pole.ymax)/2])
-                    # count = count+1
-            # count = 0
-            # self.poles_found = np.array(poles)
-            # self.pole_flag = 1
+    def pole_cb(self,data):
+        poles = []
+        count = 0
+        if len(data.bounding_boxes)>=12:
+            for pole in data.bounding_boxes:
+                if pole.Class == "pole"+str(count):
+                    poles.append([(pole.xmin+pole.xmax)/2,(pole.ymin+pole.ymax)/2])
+                    count = count+1
+            count = 0
+            self.poles_found = np.array(poles)
+            # print self.poles_found
+            self.pole_flag = 1
 
 ########################### End of all callback functions #########################
     # Retuns the orientation angle for grasping in the imgage
@@ -183,8 +190,8 @@ class Scene():
 
         for coords in gpoints:
             cv2.circle(ROI,(coords[0],coords[1]),1,(0,255,0),-1)
-        cv2.imshow("Corners",ROI)
-        cv2.waitKey(0)
+        # cv2.imshow("Corners",ROI)
+        # cv2.waitKey(0)
         if limb == 'left':
             grasp_point,grasp_index,corner_point,corner_index = min_dist_robot2points([0,w],gpoints,corners)#h,0 for left hand or h and w*2 for right hand
         else:
@@ -299,7 +306,8 @@ class Scene():
     # Get all the pole positions in robot space in the
     # order defined in the experimental setup:
     # https://docs.google.com/spreadsheets/d/1UXPOGNIo5Zb-RXWs3y_bsV-bm5m3lPbPNlhAdudsr-I/edit?usp=sharing
-    def pole_positions_rob(self,pole_poses,robot):
+    def pole_positions_rob(self,pole_poses,robot,limb):
+        opposite_limb = 'right' if limb == 'left' else 'left'
         if robot=="yumi":
             left_ids=[0,3,7,10,6,2]
             right_ids = [1,5,9,11,8,4]
@@ -392,215 +400,170 @@ class Scene():
         rospy.Subscriber('/camera/aligned_depth_to_color/image_raw', Image, self.depth_cb)
         rospy.Subscriber("/camera/color/camera_info",CameraInfo, self.camera_callback)
         rospy.Subscriber("/camera/color/image_raw",Image, self.image_callback)
-        # PUT BACK (THESE LAST TWO SUBSCRIBERS)
-        # rospy.Subscriber("/masks_t",ObjMasks,self.mask_callback)
-        # rospy.Subscriber("/darknet_ros/tracked_bbs",BoundingBoxes,self.pole_cb)
+        rospy.Subscriber("/masks_t",ObjMasks,self.mask_callback)
+        rospy.Subscriber("/darknet_ros/tracked_bbs",BoundingBoxes,self.pole_cb)
 
 ######################################################################
 ############################# EXECUTION ##############################
 ######################################################################
+def exit_routine():
+    global robTerminal
+    global execution
+    cv2.destroyAllWindows()
+    execution.stop()
+    robTerminal.closeConnection()
+    del(robTerminal)
+    print("exiting")
+    exit(0)
 
-def main():
+if __name__ == '__main__':
     # Start Robot Environment
     # Start surgemes class and open grippers and take robot to neutral positions
     global robTerminal
     global execution
-    execution = Surgemes(strategy='splines')
+    robot="yumi"
+    execution = Surgemes(strategy='model')
     robTerminal = robotTerminal(debug = False)
-    while(1):
-        message = robTerminal.getSurgemeMsg()
-        if not(message == "Surgeme Queue Empty") and (len(message)==2):
-            print("Message: \"{0}\" Delay {1}".format(message[0], message[1]))
-            # print("//////////////////////")
-    # limb = input('Ente the limb : ')
-    # limb = 'right'
-    # opposite_limb = 'right' if limb == 'left' else 'left'
-
-
-    # drop_pole_num = 1
-    #################################### Initial setup complete
+    time.sleep(1)
 
     ROI_offset = 10 #ROI bounding box offsets
     # Start the Scene calss to obtain pole positions and bounding boxes etc.
     scene = Scene()
     scene.subscribe()
     time.sleep(2)
-
-    data_that_matters = []
-    with open('Communication Message for Executiion - Taurus_sim.csv') as csvfile:
-        robot="taurus"
-        readCSV = csv.reader(csvfile)
-        for row in readCSV:
-            # data = np.array([row[3],row[4],row[7],row[10],row[8]])#grab start new peg transfer, prediction , pass_type , target_pole, intial peg poses 
-            data = np.array([row[3],row[4],row[7],row[10],row[8]])
-            data_that_matters.append(data)
-    data_that_matters = np.array(data_that_matters)
-    # print("grab start new peg transfer, prediction , pass_type , target_pole")
-    data_that_matters = data_that_matters[1:,:]
-    # print np.array(data_that_matters)
-
-    input_data = []
-    for x in data_that_matters:
-        a = int(x[0])
-        # print a
-        b = int(x[1])
-        if x[2] == 'L-R':
-            x[2] = 'left'
-        elif x[2] == 'R-L':
-            x[2] = 'right'
-        d = int(x[3])
-        inp = [a,b,d]
-        input_data.append(inp)
-    input_data = np.array(input_data) #start nw tranfer, prediction, peg=dest
-    # print(input_data)
-    transfer_ids = np.where(input_data[:,0]==1)
-    transfer_ids = np.array(transfer_ids)
-    batches = []
-    for x in transfer_ids[0,:]:
-        # print x
-        batch = input_data[x:x+7,1]
-        batches.append(batch)
-    # print batches
-    #batches has the surgeme order for each transfer_id
-    # find tranfer_id of input to get destination and l-r or r-l
-
     stop = 0
     surgeme_no = 0
     count = 0
-    for x in transfer_ids[0,18:]:
-        # print("Input Format: start_tranfer_index, prediction , pass_type , target_pole, order")
-        # print("Input to be sent: ",data_that_matters[x,:])
-        # print("Peg poses: ",data_that_matters[x,-1])
-        # print("Limb: ",data_that_matters[x,2])
-        limb = input("Enter the limb: ")
+    # Open the robot arms
+    #### TODO select limb from messages
+    limb = 'left'
+    opposite_limb = 'right' if limb == 'left' else 'left'
+    rob_pose = execution.get_curr_pose(limb)
+    execution.arm_open(limb)
+    execution.arm_open(opposite_limb)
+    execution.ret_to_neutral_angles(limb)
+    execution.ret_to_neutral_angles(opposite_limb)
+
+    # wait intil poles are found
+    while scene.pole_flag == 0:
+        a = 1
+    left_poles,right_poles = scene.pole_positions_rob(scene.poles_found,robot,limb) #Pole positions in robot space
+    rospy.on_shutdown(exit_routine)
+    ### Initial setup complete
+
+    while(1):
+        message = robTerminal.getSurgemeMsg()
+        if not(message == "Surgeme Queue Empty") and (len(message)==2):
+            print("Message: \"{0}\" Delay {1}".format(message[0], message[1]))
+        else:
+            continue
+        # if there is too much delay this mesage is old
+        ##### Parse the message:
+        delay = int(message[1])
+        label = int(message[0].split(":")[0])+1
+        pole_num = int(message[0].split(":")[1])
+        limb = message[0].split(":")[2]
+        print("surgeme", label, "On Pole: ", pole_num)
+
+        if delay>10:
+            continue
+        #### TODO select limb from messages
         opposite_limb = 'right' if limb == 'left' else 'left'
         rob_pose = execution.get_curr_pose(limb)
-        execution.arm_open('left')
-        execution.arm_open('right')
-        # time.sleep(2)
-        execution.ret_to_neutral_angles(limb)
-        execution.ret_to_neutral_angles(opposite_limb)
-        # time.sleep(2)
 
+        #### TODO check pole number system for selected and drop
+        #### pole (it seems an array of 6 poles for each limb)
 
-        ###### PUT BACK ####################
-        # while scene.pole_flag == 0:
-            # a = 1
-        # # print(scene.poles_found)
-        # left_poles,right_poles = scene.pole_positions_rob(scene.poles_found,robot) #Pole positions in robot space
-        ###### PUT BACK ####################
+        #### TODO select pole from the messages
+        selected_pole = pole_num
+        drop_pole_num = None
 
-        print("Source and Dest: ",input_data[x,2])
-        # selected_pole = input("Enter source: ")
-        # selected_pole = int(selected_pole)
-        selected_pole = input_data[x,2]
-        # drop_pole_num = input("Enter Destination: ")
-        # drop_pole_num = int(drop_pole_num)-1
-        drop_pole_num = input_data[x,2]-1
-        sequence = batches[count]
-        # sequence = [0, 1, 2, 3, 4, 5, 6]
-        print("Surgeme sequence: ",sequence)
+        #### TODO decide of to read message or if to execute surgeme :)
+        # time.sleep(3)
+        # surgeme_no = input('Enter the surgeme number youd like to perform: ')
+        surgeme_no = label
 
-        # PUT BACK everything commented inside this loop
-        for surgeme in sequence:
-            print("Surgeme: ",surgeme)
-            # time.sleep(3)
-            # surgeme_no = input('Enter the surgeme number youd like to perform: ')
-            # surgeme_no = int(surgeme)
-            # surgeme_no = surgeme_no+1
+        if surgeme_no == 1:
+            time.sleep(1)
+            # selected_pole=input('Enter the destination pole : ')
+            while len(scene.pegs) == 0:#wait for pegs to be deteced
+                # print("Enter")
+                a = 1
+            selected_triangle_id=scene.closest_ROI_to_pole(limb,selected_pole)
+            # selected_triangle_id=1
+            # print("esto",scene.pegs[int(selected_triangle_id)])
+            # first_peg = np.array(scene.pegs[int(selected_triangle_id)]) #xmin,xmax,ymin,ymax choose peg closest to pole required 
+            first_peg = np.array(scene.pegs[selected_triangle_id]) #xmin,xmax,ymin,ymax choose peg closest to pole required 
+            first_peg = first_peg.reshape(4)
+            # Apply offsets to pegs
+            first_peg[0] = first_peg[0]-ROI_offset
+            first_peg[2] = first_peg[2]-ROI_offset
+            first_peg[1] = first_peg[1]+ROI_offset
+            first_peg[3] = first_peg[3]+ROI_offset
+            # print first_peg
 
-            # if surgeme_no == 1:
-                # time.sleep(1)
-                # # selected_pole=input('Enter the destination pole : ')
-                # while len(scene.pegs) == 0:#wait for pegs to be deteced
-                    # # print("Enter")
-                    # a = 1
-                # selected_triangle_id=scene.closest_ROI_to_pole(limb,selected_pole)
-                # # selected_triangle_id=1
-                # # print("esto",scene.pegs[int(selected_triangle_id)])
-                # # first_peg = np.array(scene.pegs[int(selected_triangle_id)]) #xmin,xmax,ymin,ymax choose peg closest to pole required 
-                # first_peg = np.array(scene.pegs[selected_triangle_id]) #xmin,xmax,ymin,ymax choose peg closest to pole required 
-                # first_peg = first_peg.reshape(4)
-                # # Apply offsets to pegs
-                # first_peg[0] = first_peg[0]-ROI_offset
-                # first_peg[2] = first_peg[2]-ROI_offset
-                # first_peg[1] = first_peg[1]+ROI_offset
-                # first_peg[3] = first_peg[3]+ROI_offset
-                # # print first_peg
+            while len(scene.mask_frames) == 0:
+                # print("Entered")
+                a = 1
 
-                # while len(scene.mask_frames) == 0:
-                    # # print("Entered")
-                    # a = 1
+            ROI = scene.mask_frames[selected_triangle_id][first_peg[0]:first_peg[1],first_peg[2]:first_peg[3],:] #xmin,xmax,ymin,ymax
+            # cv2.imshow("hello",ROI)
+            # cv2.waitKey(0)
+            depth_ROI = scene.depth_vals[first_peg[0]:first_peg[1],first_peg[2]:first_peg[3]]
+            grasp,g_angle,corner = scene.peg_grasp_points(ROI,first_peg,limb,scene.K)# obtain corner points and grasp poiints from scene 
+            execution.S1(corner,g_angle,limb)#Perform Approach
+            print("Performed approach")
 
+        if surgeme_no == 2:
+            execution.S2(grasp,limb)#Perform Grasp
+        if surgeme_no == 3:
+            execution.S3(limb)#Perform Lift
+        if surgeme_no == 4:
+            pass
+            # execution.S4(limb)#Perform Go To transfer
+        if surgeme_no == 5:
+            pass
+            transfer_flag = execution.S5(limb, opposite_limb)
+        if surgeme_no == 6:
+            pass
+            # # execution.y.left.goto_pose_delta([0,0,-0.03])
+            # # execution.y.right.goto_pose_delta([0,0,-0.03])
+            # time.sleep(1)
+            # # drop_pole_num = input('Enter the destination pole : ')-1 #please refer format
+            # # drop_pole_num = drop_pole_num-1
+            # if opposite_limb == 'right':
+                # drop_pole_pose = right_poles[drop_pole_num check pole number system for selected and drop pole]
 
-                # ROI = scene.mask_frames[selected_triangle_id][first_peg[0]:first_peg[1],first_peg[2]:first_peg[3],:] #xmin,xmax,ymin,ymax
-                # # cv2.imshow("hello",ROI)
-                # # cv2.waitKey(0)
-                # depth_ROI = scene.depth_vals[first_peg[0]:first_peg[1],first_peg[2]:first_peg[3]]
-                # grasp,g_angle,corner = scene.peg_grasp_points(ROI,first_peg,limb,scene.K)# obtain corner points and grasp poiints from scene 
+            # else:
+                # drop_pole_pose = left_poles[drop_pole_num]
 
-            if surgeme_no == 1:
-                # execution.S1(corner,g_angle,limb)#Perform Approach
-                print("S1, Performed approach")
-            if surgeme_no == 2:
-                # execution.S2(grasp,limb)#Perform Grasp
-                print("S2, Performed Grasp")
-            if surgeme_no == 3:
-                print("S3, Performed Lift")
-                # execution.S3(limb)#Perform Lift
-            if surgeme_no == 4:
-                print("S4, Performed Go To-Trasfer")
-                # execution.S4(limb)#Perform Go To transfer
-            if surgeme_no == 5:
-                print("S5, Performed Exchange-Trasfer")
-                # transfer_flag = execution.S5(limb, opposite_limb)
-            if surgeme_no == 6:
-                print("S6, Performed Approach Pole")
-                # time.sleep(1)
-                # if opposite_limb == 'right':
-                    # drop_pole_pose = right_poles[drop_pole_num]
+            # while len(scene.pegs) == 0:
+                # a = 1
 
-                # else:
-                    # drop_pole_pose = left_poles[drop_pole_num]
+            # drop_triangle_id=scene.closest_ROI_to_gripper()
+            # # selected_triangle_id=1
 
-                # while len(scene.pegs) == 0:
-                    # a = 1
+            # first_peg = []
+            # first_peg = np.array(scene.pegs[drop_triangle_id]) #Choose peg closest to opposite limb gripper
+            # first_peg = first_peg.reshape(4)
+            # first_peg[0] = first_peg[0]-ROI_offset
+            # first_peg[2] = first_peg[2]-ROI_offset
+            # first_peg[1] = first_peg[1]+ROI_offset
+            # first_peg[3] = first_peg[3]+ROI_offset
 
-                # drop_triangle_id=scene.closest_ROI_to_gripper()
-                # # selected_triangle_id=1
+            # while len(scene.mask_frames) == 0:
+                # a = 1
 
-                # first_peg = []
-                # first_peg = np.array(scene.pegs[drop_triangle_id]) #Choose peg closest to opposite limb gripper
-                # first_peg = first_peg.reshape(4)
-                # first_peg[0] = first_peg[0]-ROI_offset
-                # first_peg[2] = first_peg[2]-ROI_offset
-                # first_peg[1] = first_peg[1]+ROI_offset
-                # first_peg[3] = first_peg[3]+ROI_offset
-
-                # while len(scene.mask_frames) == 0:
-                    # a = 1
-
-                # transfer_flag = 0
-                # ROI = scene.mask_frames[drop_triangle_id][first_peg[0]:first_peg[1],first_peg[2]:first_peg[3],:] #xmin,xmax,ymin,ymax
-                # drop_pt = scene.no_vision_drop_pose(ROI,limb,first_peg,drop_pole_pose)
-                # execution.S6(drop_pt,limb)#Perform Approach
-            if surgeme_no == 7:
-                print("S7, Performed align and drop")
-                # execution.S7(limb,opposite_limb)#Perform Drop
-            # stop = input('Do you want to stop: ')
+            # transfer_flag = 0
+            # ROI = scene.mask_frames[drop_triangle_id][first_peg[0]:first_peg[1],first_peg[2]:first_peg[3],:] #xmin,xmax,ymin,ymax
+            # drop_pt = scene.no_vision_drop_pose(ROI,limb,first_peg,drop_pole_pose)
+            # execution.S6(drop_pt,limb)#Perform Approach
+        if surgeme_no == 7:
+            pass
+            # execution.S7(limb,opposite_limb)#Perform Drop
         count = count+1
-    rospy.spin()
-
-if __name__ == '__main__':
-    global robTerminal
-    global execution
-    try:
-        main()
-    except KeyboardInterrupt:
+    if cv2.waitKey(0) & 0xFF == ord('q'):
         cv2.destroyAllWindows()
-        execution.stop()
-        robTerminal.closeConnection()
-        del(robTerminal)
-        print("exiting")
-        exit(0)
-
+        exit_routine()
+        # exit(0)
+    rospy.spin()

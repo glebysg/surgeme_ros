@@ -407,7 +407,7 @@ class Scene():
 if __name__ == '__main__':
     # Start Robot Environment
     # Start surgemes class and open grippers and take robot to neutral positions
-    execution = Surgemes(strategy='splines')
+    execution = Surgemes(strategy='model')
     time.sleep(1)
     # limb = input('Ente the limb : ')
     # limb = 'right'
@@ -493,12 +493,8 @@ if __name__ == '__main__':
         # sequence = batches[count]
         sequence = [0, 1, 2, 3, 4, 5, 6]
         print("Surgeme sequence: ",sequence)
-        e = input("Shall I continue : ************** : ")
 
         for surgeme in sequence:
-
-            if e == 0:
-                surgeme = 8
             print("Surgeme: ",surgeme)
             # time.sleep(3)
             # surgeme_no = input('Enter the surgeme number youd like to perform: ')
