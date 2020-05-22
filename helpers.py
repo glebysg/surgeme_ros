@@ -5,7 +5,7 @@ import csv
 import ast
 import os
 from os.path import isfile, join
-from autolab_core import RigidTransform
+# from autolab_core import RigidTransform
 from scipy import interpolate
 import pickle as pkl
 import matplotlib
@@ -35,8 +35,9 @@ from yumi_homography_functions import *
           # 10                               4
       # 9         11                     3         5
       # 8         12                     2         6
-           # 7                                1
+           # 7
 H = np.loadtxt("./data/homography.txt")
+
 def camera_to_world(point):
     global H
     point = np.array(point)
