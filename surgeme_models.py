@@ -52,6 +52,7 @@ class Surgeme_Models():
 		self.init_pose_right=self.y.right.get_pose()
 		#self.offset_thresh = [0,0,random.uniform(0.005,0.01)]
 		self.offset_thresh = [0,0,0]
+		self.grasp_offset = np.array([0,0,-0.002])
 
 	def ret_to_neutral(self,limb):
 		self.y.set_v(80)
@@ -153,7 +154,7 @@ class Surgeme_Models():
 		print("des pos",des_pos)
 		#print "Desired_POS",desired_pos
 		# desired_pos = desired_pos + self.offset_thresh
-		des_pos.translation = desired_pos
+		des_pos.translation = desired_pos + self.grasp_offset
 		#print "DES",des_pos_left
 		arm.goto_pose(des_pos,False,True,False)
 		time.sleep(3)
@@ -195,9 +196,9 @@ class Surgeme_Models():
 		# print "Current location after returning to neutral: ", curr_pos
 		# print "Shuting yumi"
 		# self.y.stop()
-		oposite_arm.move_gripper(0.006)
+		oposite_arm.move_gripper(0.005)
 		curr_pos_limb = arm.get_state()
-		des_pos_limb = curr_pos_limb 
+		des_pos_limb = curr_pos_limb
 		if limb == 'left':
 			des_pos_limb.joints = self.transfer_pose_high_left[limb_angles].joints
 		else:
@@ -218,7 +219,7 @@ class Surgeme_Models():
 		################################ DO Transer pose lose #######
 
 		curr_pos_limb = arm.get_state()
-		des_pos_limb = curr_pos_limb 
+		des_pos_limb = curr_pos_limb
 		if limb == 'left':
 			des_pos_limb.joints = self.transfer_pose_low_left[limb_angles].joints
 		else:
@@ -237,7 +238,6 @@ class Surgeme_Models():
 		time.sleep(1)
 		# print "Shuting yumi"
 		# self.y.stop()
-		
 		# Go above the transfer pose
 		# curr_pos_limb = arm.get_pose()
 		# des_pos_limb = curr_pos_limb 
@@ -302,7 +302,7 @@ class Surgeme_Models():
 		delta_z=z-curr_pos.translation[2]
 		arm.goto_pose_delta([0,0,delta_z])
 		time.sleep(1.5)
-		arm.move_gripper(0.007)
+		arm.move_gripper(0.005)
 		time.sleep(1.5)
 		arm.goto_pose_delta([0,0,-delta_z])
 		# print "Shuting yumi"

@@ -138,6 +138,7 @@ class Scene():
     # Given an ROI in camera space of a triangle it
     # returns grasp corners  and angle in the camera space
     def peg_grasp_points(self,ROI,bbox,limb,K,offset=2):
+        print("JUST CONFIRMING")
         if limb=="left":
             offset=2
         if limb=="right":
@@ -463,10 +464,13 @@ if __name__ == '__main__':
         label = int(message[0].split(":")[0])+1
         pole_num = int(message[0].split(":")[1])
         limb = message[0].split(":")[2]
-        print("surgeme", label, "On Pole: ", pole_num)
 
-        if delay>10:
+        if delay>5:
+            print("Following surgeme ignored:")
+            print("surgeme", label, "On Pole: ", pole_num)
             continue
+        else:
+            print("surgeme", label, "On Pole: ", pole_num)
         #### TODO select limb from messages
         opposite_limb = 'right' if limb == 'left' else 'left'
         rob_pose = execution.get_curr_pose(limb)
@@ -519,48 +523,40 @@ if __name__ == '__main__':
         if surgeme_no == 3:
             execution.S3(limb)#Perform Lift
         if surgeme_no == 4:
-            pass
-            # execution.S4(limb)#Perform Go To transfer
+            execution.S4(limb)#Perform Go To transfer
         if surgeme_no == 5:
-            pass
             transfer_flag = execution.S5(limb, opposite_limb)
         if surgeme_no == 6:
-            pass
-            # # execution.y.left.goto_pose_delta([0,0,-0.03])
-            # # execution.y.right.goto_pose_delta([0,0,-0.03])
-            # time.sleep(1)
-            # # drop_pole_num = input('Enter the destination pole : ')-1 #please refer format
-            # # drop_pole_num = drop_pole_num-1
-            # if opposite_limb == 'right':
-                # drop_pole_pose = right_poles[drop_pole_num check pole number system for selected and drop pole]
+            # execution.y.left.goto_pose_delta([0,0,-0.03])
+            # execution.y.right.goto_pose_delta([0,0,-0.03])
+            time.sleep(1)
+            # drop_pole_num = input('Enter the destination pole : ')-1 #please refer format
+            drop_pole_num = pole_num-1
+            if opposite_limb == 'right':
+                drop_pole_pose = right_poles[drop_pole_num]
+            else:
+                drop_pole_pose = left_poles[drop_pole_num]
+            while len(scene.pegs) == 0:
+                a = 1
+            drop_triangle_id=scene.closest_ROI_to_gripper()
+            # selected_triangle_id=1
 
-            # else:
-                # drop_pole_pose = left_poles[drop_pole_num]
+            first_peg = []
+            first_peg = np.array(scene.pegs[drop_triangle_id]) #Choose peg closest to opposite limb gripper
+            first_peg = first_peg.reshape(4)
+            first_peg[0] = first_peg[0]-ROI_offset
+            first_peg[2] = first_peg[2]-ROI_offset
+            first_peg[1] = first_peg[1]+ROI_offset
+            first_peg[3] = first_peg[3]+ROI_offset
 
-            # while len(scene.pegs) == 0:
-                # a = 1
-
-            # drop_triangle_id=scene.closest_ROI_to_gripper()
-            # # selected_triangle_id=1
-
-            # first_peg = []
-            # first_peg = np.array(scene.pegs[drop_triangle_id]) #Choose peg closest to opposite limb gripper
-            # first_peg = first_peg.reshape(4)
-            # first_peg[0] = first_peg[0]-ROI_offset
-            # first_peg[2] = first_peg[2]-ROI_offset
-            # first_peg[1] = first_peg[1]+ROI_offset
-            # first_peg[3] = first_peg[3]+ROI_offset
-
-            # while len(scene.mask_frames) == 0:
-                # a = 1
-
-            # transfer_flag = 0
-            # ROI = scene.mask_frames[drop_triangle_id][first_peg[0]:first_peg[1],first_peg[2]:first_peg[3],:] #xmin,xmax,ymin,ymax
-            # drop_pt = scene.no_vision_drop_pose(ROI,limb,first_peg,drop_pole_pose)
-            # execution.S6(drop_pt,limb)#Perform Approach
+            while len(scene.mask_frames) == 0:
+                a = 1
+            transfer_flag = 0
+            ROI = scene.mask_frames[drop_triangle_id][first_peg[0]:first_peg[1],first_peg[2]:first_peg[3],:] #xmin,xmax,ymin,ymax
+            drop_pt = scene.no_vision_drop_pose(ROI,limb,first_peg,drop_pole_pose)
+            execution.S6(drop_pt,limb)#Perform Approach
         if surgeme_no == 7:
-            pass
-            # execution.S7(limb,opposite_limb)#Perform Drop
+            execution.S7(limb,opposite_limb)#Perform Drop
         count = count+1
     if cv2.waitKey(0) & 0xFF == ord('q'):
         cv2.destroyAllWindows()
