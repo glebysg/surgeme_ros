@@ -35,7 +35,7 @@ from yumi_homography_functions import *
           # 10                               4
       # 9         11                     3         5
       # 8         12                     2         6
-           # 7
+           # 7                               1
 H = np.loadtxt("./data/homography.txt")
 
 def camera_to_world(point):

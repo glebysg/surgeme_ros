@@ -69,7 +69,7 @@ If pole positions are messed up then run yolo_track.py again
   source install/setup.bash
   rosrun mrcnn_utils pub_obj_masks.py
 
-4) Before runing the execution program
+4) Before running the execution program
   source the  'setup.bash' of the mask_ws
 
 
