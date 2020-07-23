@@ -7,6 +7,7 @@ import copy
 import sys
 import random
 from darknet_ros_msgs.msg import BoundingBoxes
+from darknet_ros_msgs.msg import BoundingBox as BBox
 from autolab_core import RigidTransform
 from yumipy import YuMiConstants as YMC
 from yumipy import YuMiRobot, YuMiState
@@ -27,6 +28,7 @@ from scipy.spatial import distance
 import math
 from scipy.interpolate import interp1d
 from mrcnn_msgs.msg import ObjMasks
+from geometry_msgs.msg import Pose
 import math
 import matplotlib.pyplot as plt
 import csv
@@ -37,7 +39,7 @@ class Scene():
     #######################
     #        INIT         #
     #######################
-    def __init__(self):
+    def __init__(self, exec_model):
         self.pegs = []
         self.poles_found = []
         self.bridge = CvBridge()
@@ -46,6 +48,9 @@ class Scene():
         self.color_frame =[]
         self.mask_frames =[]
         self.pole_flag = 0
+        self.pub_l = rospy.Publisher('yumi_pose_left', Pose, queue_size=1)
+        self.pub_r = rospy.Publisher('yumi_pose_right', Pose, queue_size=1)
+        self.exec_model = exec_model
 
     ########################
     # Subscriber callbacks #
@@ -111,6 +116,36 @@ class Scene():
             self.poles_found = np.array(poles)
             # print self.poles_found
             self.pole_flag = 1
+
+    def pose_cb(self,data):
+        pos = Pose()
+        cpos = self.exec_model.left.get_pose()
+        pos.position.x = cpos.translation[0]
+        pos.position.y = cpos.translation[1]
+        pos.position.z = cpos.translation[2]
+        pos.orientation.x = cpos.quaternion[0]
+        pos.orientation.y = cpos.quaternion[1]
+        pos.orientation.z = cpos.quaternion[2]
+        pos.orientation.w = cpos.quaternion[3]
+        self.pub_l.publish(pos)
+
+        cpos = y.right.get_pose()
+        pos.position.x = cpos.translation[0]
+        pos.position.y = cpos.translation[1]
+        pos.position.z = cpos.translation[2]
+        pos.orientation.x = cpos.quaternion[0]
+        pos.orientation.y = cpos.quaternion[1]
+        pos.orientation.z = cpos.quaternion[2]
+        pos.orientation.w = cpos.quaternion[3]
+        self.pub_r.publish(pos)
+
+
+    # for j in range(len(data.bounding_boxes)):
+        # # Get bounding box
+         # bb = data.bounding_boxes[j]
+
+         # #Get class name
+         # print(bb.Class) #'peg0'
 
 ########################### End of all callback functions #########################
     # Retuns the orientation angle for grasping in the imgage
@@ -403,6 +438,7 @@ class Scene():
         rospy.Subscriber("/camera/color/image_raw",Image, self.image_callback)
         rospy.Subscriber("/masks_t",ObjMasks,self.mask_callback)
         rospy.Subscriber("/darknet_ros/tracked_bbs",BoundingBoxes,self.pole_cb)
+        rospy.Subscriber('yumisub', String, self.pose_cb)
 
 ######################################################################
 ############################# EXECUTION ##############################
@@ -429,7 +465,7 @@ if __name__ == '__main__':
 
     ROI_offset = 10 #ROI bounding box offsets
     # Start the Scene calss to obtain pole positions and bounding boxes etc.
-    scene = Scene()
+    scene = Scene(execution)
     scene.subscribe()
     time.sleep(2)
     stop = 0
@@ -452,25 +488,42 @@ if __name__ == '__main__':
     rospy.on_shutdown(exit_routine)
     ### Initial setup complete
 
+    label_thesholds = [0.8, 0.8, 0.7, 0.7, 0.7, 0.4, 0.7]
+    prev_label = -1
+    equivalent_labels = [[1],[2,3],[2,3],[4,5],[4,5],[6,7],[6,7]]
+
     while(1):
         message = robTerminal.getSurgemeMsg()
-        if not(message == "Surgeme Queue Empty") and (len(message)==2):
-            print("Message: \"{0}\" Delay {1}".format(message[0], message[1]))
-        else:
+        if message == "Surgeme Queue Empty" or len(message)!=2:
             continue
         # if there is too much delay this mesage is old
         ##### Parse the message:
         delay = int(message[1])
         label = int(message[0].split(":")[0])+1
-        pole_num = int(message[0].split(":")[1])
-        limb = message[0].split(":")[2]
+        pred_prob = float(message[0].split(":")[1])
+        obj_num = int(message[0].split(":")[2])
+        limb = message[0].split(":")[3]
+        pedal_pressed = int(message[0].split(":")[4])
 
         if delay>5:
             print("Following surgeme ignored:")
-            print("surgeme", label, "On Pole: ", pole_num)
+            print("Message: \"{0}\" Delay {1}".format(message[0], message[1]))
             continue
-        else:
-            print("surgeme", label, "On Pole: ", pole_num)
+        # else:
+            # print("surgeme", label, "probability:", pred_prob, "On object: ", obj_num)
+
+        # check the execution threshhold
+        if pred_prob < label_thesholds[label-1] or prev_label == label:
+            print("ignoring with the firs condition",label,pred_prob)
+            continue
+        # if the prediction is above the threshold and different from the previous one:
+        # check that they are not equivalent
+        if prev_label in equivalent_labels[label-1]:
+            print("ignoring with the second condition",prev_label, label,pred_prob)
+            continue
+
+        print("surgeme", label, "probability:", pred_prob, "On object: ", obj_num)
+
         #### TODO select limb from messages
         opposite_limb = 'right' if limb == 'left' else 'left'
         rob_pose = execution.get_curr_pose(limb)
@@ -479,7 +532,7 @@ if __name__ == '__main__':
         #### pole (it seems an array of 6 poles for each limb)
 
         #### TODO select pole from the messages
-        selected_pole = pole_num
+        selected_pole = obj_num
         drop_pole_num = None
 
         #### TODO decide of to read message or if to execute surgeme :)
@@ -493,11 +546,13 @@ if __name__ == '__main__':
             while len(scene.pegs) == 0:#wait for pegs to be deteced
                 # print("Enter")
                 a = 1
-            selected_triangle_id=scene.closest_ROI_to_pole(limb,selected_pole)
+            # TODO UNCOMMENT THE LINE BELOW TO PERFORM APPROACH BY POLE
+            # selected_triangle_id=scene.closest_ROI_to_pole(limb,selected_pole)
             # selected_triangle_id=1
             # print("esto",scene.pegs[int(selected_triangle_id)])
-            # first_peg = np.array(scene.pegs[int(selected_triangle_id)]) #xmin,xmax,ymin,ymax choose peg closest to pole required 
-            first_peg = np.array(scene.pegs[selected_triangle_id]) #xmin,xmax,ymin,ymax choose peg closest to pole required 
+            # first_peg = np.array(scene.pegs[int(selected_triangle_id)]) #xmin,xmax,ymin,ymax choose peg closest to pole required
+            # TODO add logic for pegs. Make the peg match the id in the tracking
+            first_peg = np.array(scene.pegs[obj_num]) #xmin,xmax,ymin,ymax choose peg closest to pole required
             first_peg = first_peg.reshape(4)
             # Apply offsets to pegs
             first_peg[0] = first_peg[0]-ROI_offset
@@ -510,7 +565,7 @@ if __name__ == '__main__':
                 # print("Entered")
                 a = 1
 
-            ROI = scene.mask_frames[selected_triangle_id][first_peg[0]:first_peg[1],first_peg[2]:first_peg[3],:] #xmin,xmax,ymin,ymax
+            ROI = scene.mask_frames[obj_num][first_peg[0]:first_peg[1],first_peg[2]:first_peg[3],:] #xmin,xmax,ymin,ymax
             # cv2.imshow("hello",ROI)
             # cv2.waitKey(0)
             depth_ROI = scene.depth_vals[first_peg[0]:first_peg[1],first_peg[2]:first_peg[3]]
@@ -518,20 +573,20 @@ if __name__ == '__main__':
             execution.S1(corner,g_angle,limb)#Perform Approach
             print("Performed approach")
 
-        if surgeme_no == 2:
+        if surgeme_no == 2 or surgeme_no == 3:
             execution.S2(grasp,limb)#Perform Grasp
-        if surgeme_no == 3:
+        # if surgeme_no == 3:
             execution.S3(limb)#Perform Lift
-        if surgeme_no == 4:
+        if surgeme_no == 4 or surgeme_no == 5:
             execution.S4(limb)#Perform Go To transfer
-        if surgeme_no == 5:
+        # if surgeme_no == 5:
             transfer_flag = execution.S5(limb, opposite_limb)
-        if surgeme_no == 6:
+        if surgeme_no == 6 or surgeme_no == 7:
             # execution.y.left.goto_pose_delta([0,0,-0.03])
             # execution.y.right.goto_pose_delta([0,0,-0.03])
             time.sleep(1)
             # drop_pole_num = input('Enter the destination pole : ')-1 #please refer format
-            drop_pole_num = pole_num-1
+            drop_pole_num = obj_num-1
             if opposite_limb == 'right':
                 drop_pole_pose = right_poles[drop_pole_num]
             else:
@@ -555,9 +610,10 @@ if __name__ == '__main__':
             ROI = scene.mask_frames[drop_triangle_id][first_peg[0]:first_peg[1],first_peg[2]:first_peg[3],:] #xmin,xmax,ymin,ymax
             drop_pt = scene.no_vision_drop_pose(ROI,limb,first_peg,drop_pole_pose)
             execution.S6(drop_pt,limb)#Perform Approach
-        if surgeme_no == 7:
+        # if surgeme_no == 7:
             execution.S7(limb,opposite_limb)#Perform Drop
         count = count+1
+        prev_label = label
     if cv2.waitKey(0) & 0xFF == ord('q'):
         cv2.destroyAllWindows()
         exit_routine()
