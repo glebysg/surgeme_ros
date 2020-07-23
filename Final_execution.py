@@ -36,7 +36,7 @@ class Scene():
     #######################
     #        INIT         #
     #######################
-    def __init__(self):
+    def __init__(self,exec_model):
         self.pegs = []
         self.poles_found = []
         self.bridge = CvBridge()
@@ -45,6 +45,9 @@ class Scene():
         self.color_frame =[]
         self.mask_frames =[]
         self.pole_flag = 0
+        self.pub_l = rospy.Publisher('yumi_pose_left', Pose, queue_size=1)
+        self.pub_r = rospy.Publisher('yumi_pose_right', Pose, queue_size=1)
+        self.exec_model = exec_model
 
     ########################
     # Subscriber callbacks #
@@ -110,6 +113,33 @@ class Scene():
             self.poles_found = np.array(poles)
             # print self.poles_found
             self.pole_flag = 1
+
+
+
+    def pose_cb(self, data):
+        # get the left pose
+        pos = Pose()
+        cpos = y.left.get_pose()
+        pos.position.x = cpos.translation[0]
+        pos.position.y = cpos.translation[1]
+        pos.position.z = cpos.translation[2]
+        pos.orientation.x = cpos.quaternion[0]
+        pos.orientation.y = cpos.quaternion[1]
+        pos.orientation.z = cpos.quaternion[2]
+        pos.orientation.w = cpos.quaternion[3]
+        self.pub_l.publish(pos)
+
+        # get the right pose
+        cpos = y.right.get_pose()
+        pos.position.x = cpos.translation[0]
+        pos.position.y = cpos.translation[1]
+        pos.position.z = cpos.translation[2]
+        pos.orientation.x = cpos.quaternion[0]
+        pos.orientation.y = cpos.quaternion[1]
+        pos.orientation.z = cpos.quaternion[2]
+        pos.orientation.w = cpos.quaternion[3]
+        pub_r.publish(pos)
+    rospy.Subscriber('yumisub', String, pose_cb)
 
 ########################### End of all callback functions #########################
     # Retuns the orientation angle for grasping in the imgage
@@ -419,7 +449,7 @@ if __name__ == '__main__':
 
     ROI_offset = 10 #ROI bounding box offsets
     # Start the Scene calss to obtain pole positions and bounding boxes etc.
-    scene = Scene()
+    scene = Scene(execution)
     scene.subscribe()
     time.sleep(2)
 

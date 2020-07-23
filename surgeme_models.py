@@ -32,7 +32,7 @@ class Surgeme_Models():
 		self.neutral_pose = load_pose_by_path('data/neutral_pose_peg.txt')
 		self.neutral_angles = load_pose_by_path('data/neutral_angles_pose_peg1.txt')
 		self.transfer_pose_high_left = load_pose_by_path('data/transfer_pose_high.txt')
-		self.transfer_pose_low_left = load_pose_by_path('data/transfer_pose_low.txt')
+		self.transfer_pose_low_left = load_pose_by_path('data/new_transfer_pose_low_left_to_right.txt')
 		self.transfer_pose_high_right = load_pose_by_path('data/transfer_pos_high_right_to_left.txt')
 		self.transfer_pose_low_right = load_pose_by_path('data/transfer_pos_low_right_to_left.txt')
 
@@ -52,7 +52,7 @@ class Surgeme_Models():
 		self.init_pose_right=self.y.right.get_pose()
 		#self.offset_thresh = [0,0,random.uniform(0.005,0.01)]
 		self.offset_thresh = [0,0,0]
-		self.grasp_offset = np.array([0,0,-0.002])
+		self.grasp_offset = np.array([0,0,0])
 
 	def ret_to_neutral(self,limb):
 		self.y.set_v(80)
