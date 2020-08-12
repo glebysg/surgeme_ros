@@ -42,6 +42,8 @@ def world_to_yumi(vector,yumi_arm):
 
 	if yumi_arm=="left":
 		output=np.dot(np.linalg.inv(M_left),poses)
-	elif yumi_arm=="right":
+                return output[:-1,:]
+        # elif yumi_arm=="right":
+        else:
 		output=np.dot(np.linalg.inv(M_right),poses)
-	return output[:-1,:]
+                return output[:-1,:]

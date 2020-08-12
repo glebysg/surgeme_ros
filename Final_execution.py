@@ -31,6 +31,7 @@ import math
 import matplotlib.pyplot as plt
 import csv
 from surgeme_wrapper import Surgemes
+from geometry_msgs.msg import Pose
 
 class Scene():
     #######################
@@ -45,8 +46,6 @@ class Scene():
         self.color_frame =[]
         self.mask_frames =[]
         self.pole_flag = 0
-        self.pub_l = rospy.Publisher('yumi_pose_left', Pose, queue_size=1)
-        self.pub_r = rospy.Publisher('yumi_pose_right', Pose, queue_size=1)
         self.exec_model = exec_model
 
     ########################
@@ -69,7 +68,6 @@ class Scene():
 
         (rows,cols) = cv_image.shape
         self.depth_vals = cv_image/1000.0
-
 
     def camera_callback(self, data):
         self.K = np.array(list(data.K)).reshape(3,3)
@@ -113,33 +111,6 @@ class Scene():
             self.poles_found = np.array(poles)
             # print self.poles_found
             self.pole_flag = 1
-
-
-
-    def pose_cb(self, data):
-        # get the left pose
-        pos = Pose()
-        cpos = y.left.get_pose()
-        pos.position.x = cpos.translation[0]
-        pos.position.y = cpos.translation[1]
-        pos.position.z = cpos.translation[2]
-        pos.orientation.x = cpos.quaternion[0]
-        pos.orientation.y = cpos.quaternion[1]
-        pos.orientation.z = cpos.quaternion[2]
-        pos.orientation.w = cpos.quaternion[3]
-        self.pub_l.publish(pos)
-
-        # get the right pose
-        cpos = y.right.get_pose()
-        pos.position.x = cpos.translation[0]
-        pos.position.y = cpos.translation[1]
-        pos.position.z = cpos.translation[2]
-        pos.orientation.x = cpos.quaternion[0]
-        pos.orientation.y = cpos.quaternion[1]
-        pos.orientation.z = cpos.quaternion[2]
-        pos.orientation.w = cpos.quaternion[3]
-        pub_r.publish(pos)
-    rospy.Subscriber('yumisub', String, pose_cb)
 
 ########################### End of all callback functions #########################
     # Retuns the orientation angle for grasping in the imgage
@@ -244,8 +215,7 @@ class Scene():
         grasp_point = np.array(grasp_point)
         z_coord = get_min_depth(depth_ROI)
         yumi_grasp_pose = cam2robot(grasp_point[0], grasp_point[1],z_coord,K,limb)
-        yumi_grasp_pose[2] = 0.0179 #Constant depth
-
+        yumi_grasp_pose[2] = 0.0179 #Constant depth to the surface (blood: 0.0222, regular: 0.179)
         return yumi_grasp_pose,angle,yumi_corner_pose
 
     # Given an ROI of the grasped peg  and  the pole positions in camera space,
