@@ -17,7 +17,7 @@ import IPython
 import rospy
 import cv2
 import itertools
-from std_msgs.msg import String
+from std_msgs.msg import String, Empty
 from helpers import *
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
@@ -34,6 +34,7 @@ import matplotlib.pyplot as plt
 import csv
 from surgeme_wrapper import Surgemes
 from forwardcomm.forward_comm_robot_terminal import robotTerminal
+from collections import OrderedDict
 
 class Scene():
     #######################
@@ -92,8 +93,14 @@ class Scene():
                 mask_frame = self.bridge.imgmsg_to_cv2(mask,'passthrough')
                 mask_frame = cv2.cvtColor(mask_frame,cv2.COLOR_BGR2RGB)
                 masks.append(mask_frame)
-        self.pegs = pegs #here saved ROIS of triangles
-        self.mask_frames = masks
+        if len(pegs)==len(self.trk_pegs):
+            ids = self.reorder_bbs(pegs, self.trk_pegs)
+            self.pegs = [pegs[i] for i in ids] #here saved ROIS of triangles
+            self.mask_frames = [masks[i] for i in ids]
+        else:
+            self.pegs = pegs #here saved ROIS of triangles
+            self.mask_frames = masks
+
         # mask_img = data.masks
         # print(mask_img.encoding)
         # if len(data.masks)>0:
@@ -104,40 +111,48 @@ class Scene():
         # cv2.imshow("MASK",self.mask_frame)
         # cv2.waitKey(0)
 
+
     def pole_cb(self,data):
         poles = []
+        pegs = OrderedDict()
         count = 0
         if len(data.bounding_boxes)>=12:
             for pole in data.bounding_boxes:
                 if pole.Class == "pole"+str(count):
                     poles.append([(pole.xmin+pole.xmax)/2,(pole.ymin+pole.ymax)/2])
                     count = count+1
+                if pole.Class[0:3] == "peg":
+                    pegs[int(pole.Class[3])] = [pole.xmin, pole.ymin, pole.xmax, pole.ymax]
+            self.trk_pegs = pegs
             count = 0
             self.poles_found = np.array(poles)
             # print self.poles_found
             self.pole_flag = 1
 
+
     def pose_cb(self,data):
         pos = Pose()
-        cpos = self.exec_model.left.get_pose()
-        pos.position.x = cpos.translation[0]
-        pos.position.y = cpos.translation[1]
-        pos.position.z = cpos.translation[2]
-        pos.orientation.x = cpos.quaternion[0]
-        pos.orientation.y = cpos.quaternion[1]
-        pos.orientation.z = cpos.quaternion[2]
-        pos.orientation.w = cpos.quaternion[3]
-        self.pub_l.publish(pos)
+        cpos = self.exec_model.get_curr_pose('left')
+        if cpos is not None:
+            pos.position.x = cpos.translation[0]
+            pos.position.y = cpos.translation[1]
+            pos.position.z = cpos.translation[2]
+            pos.orientation.x = cpos.quaternion[0]
+            pos.orientation.y = cpos.quaternion[1]
+            pos.orientation.z = cpos.quaternion[2]
+            pos.orientation.w = cpos.quaternion[3]
+            self.pub_l.publish(pos)
 
-        cpos = y.right.get_pose()
-        pos.position.x = cpos.translation[0]
-        pos.position.y = cpos.translation[1]
-        pos.position.z = cpos.translation[2]
-        pos.orientation.x = cpos.quaternion[0]
-        pos.orientation.y = cpos.quaternion[1]
-        pos.orientation.z = cpos.quaternion[2]
-        pos.orientation.w = cpos.quaternion[3]
-        self.pub_r.publish(pos)
+        cpos = self.exec_model.get_curr_pose('right')
+        if cpos is not None:
+            pos.position.x = cpos.translation[0]
+            pos.position.y = cpos.translation[1]
+            pos.position.z = cpos.translation[2]
+            pos.orientation.x = cpos.quaternion[0]
+            pos.orientation.y = cpos.quaternion[1]
+            pos.orientation.z = cpos.quaternion[2]
+            pos.orientation.w = cpos.quaternion[3]
+            self.pub_r.publish(pos)
 
 
     # for j in range(len(data.bounding_boxes)):
@@ -148,6 +163,32 @@ class Scene():
          # print(bb.Class) #'peg0'
 
 ########################### End of all callback functions #########################
+    # Compute distance between two sets of bb and return reordered bb
+    def reorder_bbs(self, mbbs, tbbs):
+        mcts = []
+        tcts = [i for i,_ in tbbs.items()]
+        ids = []
+
+        for i,bb in tbbs.items():
+            tcts[i] = [(bb[0]+bb[2])/2,(bb[1]+bb[3])/2]
+        
+        for bb in mbbs:
+            mcts.append([(bb[2]+bb[3])/2,(bb[0]+bb[1])/2])
+
+        for ct in tcts: 
+            l2d = self.l2vec(ct, mcts)
+            ids.append(np.argmin(np.array(l2d)))
+        return(ids)
+        
+    def l2dis(self, pt1, pt2):
+        return np.sqrt((pt1[0]-pt2[0])**2 + (pt1[1]-pt2[1])**2)
+
+    def l2vec(self, cpt, pts):
+        l2vec = []
+        for pt in pts:
+            l2vec.append(self.l2dis(cpt,pt))
+        return l2vec
+
     # Retuns the orientation angle for grasping in the imgage
     # frame.This funcion is called in peg_grasp_points
     def grip_angle(self,grip_corners):
@@ -371,8 +412,8 @@ class Scene():
         self.right_poles_pixel_location=poles_right
         poles_right_arm = cam2robot_array(poles_right,self.K,opposite_limb)
 
-        cv2.imshow("Poles",self.color_frame)
-        cv2.waitKey(0)
+        # cv2.imshow("Poles",self.color_frame)
+        # cv2.waitKey(0)
         return poles_left_arm,poles_right_arm
 
     # Given all the pegs, choose the closes to the selected pole
@@ -438,7 +479,7 @@ class Scene():
         rospy.Subscriber("/camera/color/image_raw",Image, self.image_callback)
         rospy.Subscriber("/masks_t",ObjMasks,self.mask_callback)
         rospy.Subscriber("/darknet_ros/tracked_bbs",BoundingBoxes,self.pole_cb)
-        rospy.Subscriber('yumisub', String, self.pose_cb)
+        rospy.Subscriber('/posepub', Empty, self.pose_cb)
 
 ######################################################################
 ############################# EXECUTION ##############################
@@ -488,8 +529,9 @@ if __name__ == '__main__':
     rospy.on_shutdown(exit_routine)
     ### Initial setup complete
 
-    label_thesholds = [0.8, 0.8, 0.7, 0.7, 0.7, 0.4, 0.7]
-    prev_label = -1
+    label_thesholds = [0.8, 0.8, 0.7, 0.75, 0.75, 0.4, 0.7]
+    prev_label = 4
+    prev_obj_num = -1
     equivalent_labels = [[1],[2,3],[2,3],[4,5],[4,5],[6,7],[6,7]]
 
     while(1):
@@ -513,14 +555,17 @@ if __name__ == '__main__':
             # print("surgeme", label, "probability:", pred_prob, "On object: ", obj_num)
 
         # check the execution threshhold
-        if pred_prob < label_thesholds[label-1] or prev_label == label:
-            print("ignoring with the firs condition",label,pred_prob)
+        if pred_prob < label_thesholds[label-1] or (prev_label == label and prev_obj_num == obj_num):
+            print("ignoring with the first condition",label,pred_prob)
             continue
         # if the prediction is above the threshold and different from the previous one:
         # check that they are not equivalent
         if prev_label in equivalent_labels[label-1]:
             print("ignoring with the second condition",prev_label, label,pred_prob)
             continue
+        # else:
+        #     continue
+        #     print("executong", label,pred_prob)
 
         print("surgeme", label, "probability:", pred_prob, "On object: ", obj_num)
 
@@ -614,6 +659,7 @@ if __name__ == '__main__':
             execution.S7(limb,opposite_limb)#Perform Drop
         count = count+1
         prev_label = label
+        prev_obj_num = obj_num
     if cv2.waitKey(0) & 0xFF == ord('q'):
         cv2.destroyAllWindows()
         exit_routine()

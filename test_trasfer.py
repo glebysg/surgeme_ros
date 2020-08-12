@@ -4,14 +4,14 @@ from yumipy import YuMiRobot, YuMiState
 from helpers import load_pose_by_path
 from time import sleep
 
-limb = 'left'
+limb = 'right'
 
 neutral_pose = load_pose_by_path('data/neutral_pose_peg.txt')
 neutral_angles = load_pose_by_path('data/neutral_angles_pose_peg1.txt')
 transfer_pose_high_left = load_pose_by_path('data/transfer_pose_high.txt')
-transfer_pose_low_left = load_pose_by_path('data/transfer_pose_low.txt')
+transfer_pose_low_left = load_pose_by_path('data/new_transfer_pose_low_left_to_right.txt')
 transfer_pose_high_right = load_pose_by_path('data/transfer_pos_high_right_to_left.txt')
-transfer_pose_low_right = load_pose_by_path('data/transfer_pos_low_right_to_left.txt')
+transfer_pose_low_right = load_pose_by_path('data/new_transfer_pose_low_right_to_left.txt')
 
 y = YuMiRobot(include_right=True, log_state_histories=True, log_pose_histories=True)
 DELTARIGHT=RigidTransform(translation=[0, 0, 0.205], rotation=[1, 0, 0, 0])

@@ -28,13 +28,13 @@ class Surgeme_Models():
 		global y
 		y = self.y
 		# self.y = y
-				# TODO CHANGE THIS TO THE YUMI CLASS LATER
+                # TODO CHANGE THIS TO THE YUMI CLASS LATER
 		self.neutral_pose = load_pose_by_path('data/neutral_pose_peg.txt')
-		self.neutral_angles = load_pose_by_path('data/neutral_angles_pose_peg1.txt')
+		self.neutral_angles = load_pose_by_path('data/new_neutral_angles.txt')
 		self.transfer_pose_high_left = load_pose_by_path('data/transfer_pose_high.txt')
 		self.transfer_pose_low_left = load_pose_by_path('data/new_transfer_pose_low_left_to_right.txt')
 		self.transfer_pose_high_right = load_pose_by_path('data/transfer_pos_high_right_to_left.txt')
-		self.transfer_pose_low_right = load_pose_by_path('data/transfer_pos_low_right_to_left.txt')
+		self.transfer_pose_low_right = load_pose_by_path('data/new_transfer_pose_low_right_to_left.txt')
 
 		#setup the ool distance for the surgical grippers
 		# ORIGINAL GRIPPER TRANSFORM IS tcp2=RigidTransform(translation=[0, 0, 0.156], rotation=[[ 1. 0. 0.] [ 0. 1. 0.] [ 0. 0. 1.]])
@@ -57,7 +57,6 @@ class Surgeme_Models():
 	def ret_to_neutral(self,limb):
 		self.y.set_v(80)
 		arm = self.y.right if limb == 'right' else self.y.left
-
 		curr_pos_left = arm.get_pose()
 		des_pos_left = curr_pos_left
 		des_pos_left.translation = self.neutral_pose[limb].translation
@@ -68,14 +67,13 @@ class Surgeme_Models():
 
 	def ret_to_neutral_angles(self,limb):
 		self.y.set_v(80)
-		arm = self.y.right if limb == 'right' else self.y.left
-
+		# arm = self.y.right if limb == 'right' else self.y.left
 		limb_angles = 'left_angles' if limb == 'left' else 'right_angles'
-
-		curr_pos_limb = arm.get_state()
-		des_pos_limb = curr_pos_limb
-		des_pos_limb.joints = self.neutral_angles[limb_angles].joints
-		arm.goto_state(des_pos_limb)
+		# curr_pos_limb = arm.get_state()
+		# des_pos_limb = curr_pos_limb
+		# des_pos_limb.joints = self.neutral_angles[limb_angles].joints
+		self.goto_joint_state(self.neutral_angles[limb_angles].joints,limb)
+		# arm.goto_state(des_pos_limb)
 		print "Moved to neutral :)"
 	
 	def get_curr_pose(self,limb):
@@ -94,10 +92,12 @@ class Surgeme_Models():
 	def right_open(self):
 		self.y.right.move_gripper(0.005)
 
-	def joint_orient(self,limb,j_val,offset = 150):
-	 	
+	def goto_joint_state(self,joints,limb):
+		arm = self.y.right if limb == 'right' else self.y.left
+		joint_state = YuMiState(vals=joints)
+		arm.goto_state(joint_state)
 
-		
+	def joint_orient(self,limb,j_val,offset = 150):
 		arm = self.y.right if limb == 'right' else self.y.left
 		temp = arm.get_state()
 		if limb == 'left':
