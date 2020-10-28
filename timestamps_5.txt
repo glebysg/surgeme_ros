@@ -1,0 +1,267 @@
+Enter the limb: 'right'
+Moved to neutral :)
+Moved to neutral :)
+Enter source: 1
+Enter Destination: 1
+('Surgeme sequence: ', [0, 1, 2, 3, 4, 5, 6])
+('Surgeme: ', 0)
+[[147, 211, 351, 410], [306, 371, 366, 423], [268, 331, 395, 464]]
+('poles location shape', (6, 3))
+('dist', 3.1622776601683795, 'triangle id', 0)
+('Grasp Points', array([[16, 39],
+       [39, 51],
+       [38, 26]]))
+('Grip Corners:', array([[18, 68],
+       [65, 38]]))
+('Dx, Dy', -47, 30)
+('Orientation Angle:', 147.4499965078066)
+Changing Depth
+Changing Depth
+('Joint 5 degrees ', -41.18)
+Current location:  [ 0.31586    -0.12321001  0.06987   ]
+Current location after moving:  [ 0.31586    -0.12321001  0.06987   ]
+Finished Approach
+Performed approach
+('Surgeme: ', 1)
+Current location:  [ 0.33077002 -0.06421001  0.03002   ]
+Approaching desired peg:  1
+('des pos', RigidTransform(rotation=np.array([[-0.33246475, -0.94139268,  0.05698247],
+       [-0.86582402,  0.32861512,  0.3773074 ],
+       [-0.37391973,  0.07610462, -0.92433334]]), translation=np.array([ 0.33077002, -0.06421001,  0.03002   ], dtype=float32), from_frame='tool', to_frame='world'))
+Current location after moving:  [ 0.32891002 -0.05363     0.01789   ]
+Finished Grasping
+('Surgeme: ', 2)
+Current location:  [ 0.32891002 -0.05364     0.01788   ]
+Approaching desired peg:  1
+Finished Lift
+Moved to neutral :)
+('Surgeme: ', 3)
+Finished Go TO Transfer 
+('Surgeme: ', 4)
+Transfer Complete right
+Finsihed Transfer 
+Moved to neutral :)
+Moved to neutral :)
+('Surgeme: ', 5)
+[[306, 370, 366, 424], [270, 331, 393, 466], [147, 211, 350, 384]]
+('dist', 0.3382200969827586, 'triangle id', 0)
+('gripper pose', 0.31692004, 0.076400004)
+('it will move to delta', [0.02157840586072074, -0.03218410367852136])
+Finished Approach 
+('Surgeme: ', 6)
+Finished align and Drop
+Moved to neutral :)
+('Finished trial', 0, 29277.141)
+Enter the limb: 'right'
+Moved to neutral :)
+Moved to neutral :)
+Enter source: 3
+Enter Destination: 3
+('Surgeme sequence: ', [0, 1, 2, 3, 4, 5, 6])
+('Surgeme: ', 0)
+[[305, 371, 367, 425], [214, 283, 251, 317], [267, 332, 394, 464]]
+('poles location shape', (6, 3))
+('dist', 2.0, 'triangle id', 2)
+('Grasp Points', array([[43, 17],
+       [58, 42],
+       [30, 40]]))
+('Grip Corners:', array([[75, 17],
+       [46, 69]]))
+('Dx, Dy', 29, -52)
+('Orientation Angle:', 119.14807184571305)
+Changing Depth
+('Joint 5 degrees ', -41.18)
+Current location:  [ 0.31586    -0.12321001  0.06987   ]
+Current location after moving:  [ 0.31586    -0.12321001  0.06987   ]
+Finished Approach
+Performed approach
+('Surgeme: ', 1)
+Current location:  [ 0.27740002 -0.08937     0.03015   ]
+Approaching desired peg:  1
+('des pos', RigidTransform(rotation=np.array([[-0.32527138, -0.94382027,  0.05832519],
+       [-0.86823947,  0.32252208,  0.37701424],
+       [-0.37464484,  0.07199171, -0.92436921]]), translation=np.array([ 0.27740002, -0.08937   ,  0.03015   ], dtype=float32), from_frame='tool', to_frame='world'))
+Current location after moving:  [ 0.26582003 -0.0861      0.01789   ]
+Finished Grasping
+('Surgeme: ', 2)
+Current location:  [ 0.26582003 -0.0861      0.01789   ]
+Approaching desired peg:  1
+Finished Lift
+Moved to neutral :)
+('Surgeme: ', 3)
+Finished Go TO Transfer 
+('Surgeme: ', 4)
+Transfer Complete right
+Finsihed Transfer 
+Moved to neutral :)
+Moved to neutral :)
+('Surgeme: ', 5)
+[[147, 212, 359, 419], [307, 370, 365, 425], [261, 335, 404, 474]]
+('dist', 0.33832751322751325, 'triangle id', 1)
+('gripper pose', 0.317, 0.076740004)
+('it will move to delta', [-0.05084825049489183, -0.05415784939222093])
+Finished Approach 
+('Surgeme: ', 6)
+Finished align and Drop
+Moved to neutral :)
+('Finished trial', 1, 28492.744)
+Enter the limb: 'right'
+Moved to neutral :)
+Moved to neutral :)
+Enter source: 4
+Enter Destination: 4
+('Surgeme sequence: ', [0, 1, 2, 3, 4, 5, 6])
+('Surgeme: ', 0)
+[[304, 375, 367, 425], [302, 359, 207, 263], [148, 209, 360, 417]]
+('poles location shape', (6, 3))
+('dist', 3.1622776601683795, 'triangle id', 0)
+('Grasp Points', array([[38, 62],
+       [41, 37],
+       [17, 44]]))
+('Grip Corners:', array([[66, 57],
+       [20, 16]]))
+('Dx, Dy', 46, 41)
+('Orientation Angle:', 41.710757321508176)
+Changing Depth
+('Joint 5 degrees ', -41.18)
+Current location:  [ 0.31586    -0.12321001  0.06987   ]
+Current location after moving:  [ 0.30212 -0.11377  0.06285]
+Finished Approach
+Performed approach
+('Surgeme: ', 1)
+Current location:  [ 0.23734 -0.06982  0.02981]
+Approaching desired peg:  1
+('des pos', RigidTransform(rotation=np.array([[ 0.25177513, -0.96624774,  0.05453973],
+       [-0.90172187, -0.21375096,  0.37577679],
+       [-0.35143556, -0.14379092, -0.9251039 ]]), translation=np.array([ 0.23734, -0.06982,  0.02981], dtype=float32), from_frame='tool', to_frame='world'))
+Current location after moving:  [ 0.24907002 -0.05958001  0.01792   ]
+Finished Grasping
+('Surgeme: ', 2)
+Current location:  [ 0.24907002 -0.05958001  0.01792   ]
+Approaching desired peg:  1
+Finished Lift
+Moved to neutral :)
+('Surgeme: ', 3)
+Finished Go TO Transfer 
+('Surgeme: ', 4)
+Transfer Complete right
+Finsihed Transfer 
+Moved to neutral :)
+Moved to neutral :)
+('Surgeme: ', 5)
+[[148, 208, 360, 417], [188, 252, 145, 206], [308, 382, 375, 429]]
+('dist', 0.34029079079079083, 'triangle id', 2)
+('gripper pose', 0.317, 0.07675)
+('it will move to delta', [-0.06920552271580244, -0.029948502074034544])
+Finished Approach 
+('Surgeme: ', 6)
+Finished align and Drop
+Moved to neutral :)
+('Finished trial', 2, 29912.944)
+Enter the limb: 'right'
+Moved to neutral :)
+Moved to neutral :)
+Enter source: 5
+Enter Destination: 5
+('Surgeme sequence: ', [0, 1, 2, 3, 4, 5, 6])
+('Surgeme: ', 0)
+[[147, 210, 357, 420], [188, 253, 146, 208], [275, 338, 321, 390]]
+('poles location shape', (6, 3))
+('dist', 5.0990195135927845, 'triangle id', 2)
+('Grasp Points', array([[43, 15],
+       [57, 40],
+       [29, 39]]))
+('Grip Corners:', array([[75, 16],
+       [43, 68]]))
+('Dx, Dy', 32, -52)
+('Orientation Angle:', 121.6075022462489)
+Changing Depth
+('Joint 5 degrees ', -41.18)
+Current location:  [ 0.31586    -0.12321001  0.06987   ]
+Current location after moving:  [ 0.31354 -0.11899  0.06739]
+Finished Approach
+Performed approach
+('Surgeme: ', 1)
+Current location:  [ 0.27567002 -0.05083     0.03015   ]
+Approaching desired peg:  1
+('des pos', RigidTransform(rotation=np.array([[-0.32581733, -0.94379695,  0.05559121],
+       [-0.86824105,  0.32196836,  0.37748359],
+       [-0.37416647,  0.07472412, -0.92434612]]), translation=np.array([ 0.27567002, -0.05083   ,  0.03015   ], dtype=float32), from_frame='tool', to_frame='world'))
+Current location after moving:  [ 0.26422 -0.04399  0.01785]
+Finished Grasping
+('Surgeme: ', 2)
+Current location:  [ 0.26423 -0.04399  0.01785]
+Approaching desired peg:  1
+Finished Lift
+Moved to neutral :)
+('Surgeme: ', 3)
+Finished Go TO Transfer 
+('Surgeme: ', 4)
+Transfer Complete right
+Finsihed Transfer 
+Moved to neutral :)
+Moved to neutral :)
+('Surgeme: ', 5)
+[[148, 210, 357, 420], [279, 341, 322, 376], [188, 254, 146, 205], [330, 386, 395, 475]]
+('dist', 0.33917857142857144, 'triangle id', 3)
+('gripper pose', 0.317, 0.07675)
+('it will move to delta', [-0.04995649873305347, -0.008348346267139262])
+Finished Approach 
+('Surgeme: ', 6)
+Finished align and Drop
+Moved to neutral :)
+('Finished trial', 3, 28866.39)
+Enter the limb: 'right'
+Moved to neutral :)
+Moved to neutral :)
+Enter source: 1
+Enter Destination: 1
+('Surgeme sequence: ', [0, 1, 2, 3, 4, 5, 6])
+('Surgeme: ', 0)
+[[297, 361, 121, 171], [148, 211, 357, 419], [188, 253, 147, 207]]
+('poles location shape', (6, 3))
+('dist', 7.615773105863909, 'triangle id', 1)
+('Grasp Points', array([[40, 53],
+       [20, 38],
+       [44, 28]]))
+('Grip Corners:', array([[68, 44],
+       [24, 10]]))
+('Dx, Dy', 44, 34)
+('Orientation Angle:', 37.69424046668917)
+Changing Depth
+Changing Depth
+('Joint 5 degrees ', -41.18)
+Current location:  [ 0.31586    -0.12321001  0.06987   ]
+Current location after moving:  [ 0.31669003 -0.11877     0.06679001]
+Finished Approach
+Performed approach
+('Surgeme: ', 1)
+Current location:  [ 0.32616    -0.06854001  0.03003   ]
+Approaching desired peg:  1
+('des pos', RigidTransform(rotation=np.array([[ 0.25960171, -0.9639322 ,  0.0586657 ],
+       [-0.89998419, -0.21945612,  0.37665297],
+       [-0.35019338, -0.15057795, -0.92449493]]), translation=np.array([ 0.32616   , -0.06854001,  0.03003   ], dtype=float32), from_frame='tool', to_frame='world'))
+Current location after moving:  [ 0.34082 -0.06035  0.01785]
+Finished Grasping
+('Surgeme: ', 2)
+Current location:  [ 0.34082 -0.06035  0.01785]
+Approaching desired peg:  1
+Finished Lift
+Moved to neutral :)
+('Surgeme: ', 3)
+Finished Go TO Transfer 
+('Surgeme: ', 4)
+Transfer Complete right
+Finsihed Transfer 
+Moved to neutral :)
+Moved to neutral :)
+('Surgeme: ', 5)
+[[298, 361, 113, 171], [140, 201, 358, 418], [191, 252, 145, 203]]
+('dist', 0.3297837985769021, 'triangle id', 0)
+('gripper pose', 0.31686, 0.07609)
+('it will move to delta', [0.020041075673335518, -0.03245334209216046])
+Finished Approach 
+('Surgeme: ', 6)
+Finished align and Drop
+Moved to neutral :)
+('Finished trial', 4, 29092.164)
