@@ -121,6 +121,8 @@ objpoints= np.array(objpoints,dtype='float32').reshape(-1,3)
     # print("img", img)
     # print("world", world)
     # print("/////////////////////")
+print(imgpoints.T)
+print(objpoints.T)
 H = affine_matrix_from_points(imgpoints.T, objpoints.T, scale=True)
 # print(H)
 
@@ -132,7 +134,6 @@ ax.set_xlabel('X Label')
 ax.set_ylabel('Y Label')
 ax.set_zlabel('Z Label')
 
-plt.show()
 
 # for source, dest in zip(imgpoints,objpoints):
     # print("image :", source)
@@ -143,8 +144,13 @@ np.savetxt(join(img_path,homography_path),H)
 print(imgpoints.shape)
 print(objpoints.shape)
 error = []
+estimated_pts = []
 for source, dest in zip(imgpoints,objpoints):
     estimated_dest = np.dot(H,np.concatenate((source,[1])))
+    estimated_pts.append(estimated_dest)
     # print(estimated_dest, source)
     error.append(np.linalg.norm(dest-estimated_dest[:3]))
+estimated_pts = np.array(estimated_pts)
 print("AVERAGE EUCLIDEAN ERROR IN METERS:", np.mean(error))
+ax.scatter(estimated_pts[:,0], estimated_pts[:,1], estimated_pts[:,2], marker='*')
+plt.show()

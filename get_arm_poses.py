@@ -23,7 +23,7 @@ def main():
             help="save joint values instead of gripper pose")
 
     args = parser.parse_args()
-    save_joints = False if args.joints is None else True
+    save_joints = False if not args.joints else True
 
     # Initialize Yumi
     y=YuMiRobot(include_right=True, log_state_histories=True, log_pose_histories=True)

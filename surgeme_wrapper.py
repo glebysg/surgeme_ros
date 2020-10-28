@@ -14,10 +14,12 @@ class Surgemes():
     ################# Add grippers and neutral and current pose
     def S1(self,final_pose,g_angle,limb):
         self.execution.joint_orient(limb,g_angle)
-        self.execution.surgeme1(1,final_pose,limb)
-        time.sleep(1)
-        print("Finished Approach")
         time.sleep(2)
+
+        self.execution.surgeme1(1,final_pose,limb)
+        print("Finished Approach")
+        time.sleep(1)
+
 
     def S2(self,final_pose,limb):
         self.execution.surgeme2(1,final_pose,limb)
@@ -27,7 +29,8 @@ class Surgemes():
         self.execution.surgeme3(1,limb)
         print("Finished Lift")
         # if self.strategy == 'model':
-        self.execution.ret_to_neutral_angles(limb)
+        # self.execution.ret_to_neutral_angles(limb)
+        self.execution.ret_to_neutral(limb)
 
     def S4(self,limb):
         self.execution.surgeme4(limb)
@@ -36,8 +39,10 @@ class Surgemes():
     def S5(self,limb,opposite_limb):
         self.execution.surgeme5(limb)
         print("Finsihed Transfer ")
-        self.execution.ret_to_neutral_angles(limb)
-        self.execution.ret_to_neutral_angles(opposite_limb)
+        self.execution.ret_to_neutral(limb)
+        self.execution.ret_to_neutral(opposite_limb)
+        # self.execution.ret_to_neutral_angles(limb)
+        # self.execution.ret_to_neutral_angles(opposite_limb)
         transfer_flag = 1
         return transfer_flag
 
@@ -50,10 +55,14 @@ class Surgemes():
         time.sleep(1)
         self.execution.surgeme7(limb)
         print("Finished align and Drop")
-        self.execution.ret_to_neutral_angles(opposite_limb)
+        # self.execution.ret_to_neutral_angles(opposite_limb)
+        self.execution.ret_to_neutral(limb)
 
     def get_curr_pose(self,limb):
         return self.execution.get_curr_pose(limb)
+
+    def get_curr_joints(self,limb):
+        return self.execution.get_curr_joints(limb)
 
     def ret_to_neutral_angles(self, limb):
         return self.execution.ret_to_neutral_angles(limb)
@@ -63,6 +72,13 @@ class Surgemes():
             self.execution.left_open()
         else:
             self.execution.right_open()
+
+    def arm_close(self, limb):
+        if limb == 'left':
+            self.execution.left_close()
+        else:
+            self.execution.right_close()
+            
     def stop(self):
         self.execution.stop()
 
