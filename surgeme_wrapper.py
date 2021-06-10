@@ -4,8 +4,8 @@ import time
 
 class Surgemes():
     def __init__(self, robot='yumi', strategy='model'):
-	self.strategy = strategy
-	self.robot = robot
+        self.strategy = strategy
+        self.robot = robot
         if self.strategy=='model':
             self.execution = Surgeme_Models()
         else:
@@ -51,9 +51,9 @@ class Surgemes():
         print ("Finished Approach ")
         time.sleep(1.5)
 
-    def S7(self,limb,opposite_limb):
+    def S7(self,limb,opposite_limb, drop_ht):
         time.sleep(1)
-        self.execution.surgeme7(limb)
+        self.execution.surgeme7(limb, drop_ht)
         print("Finished align and Drop")
         # self.execution.ret_to_neutral_angles(opposite_limb)
         self.execution.ret_to_neutral(limb)

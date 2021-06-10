@@ -16,7 +16,7 @@ import IPython
 import rospy
 import cv2
 import itertools
-from std_msgs.msg import String
+from std_msgs.msg import String, Empty, Float32MultiArray
 from helpers import *
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
@@ -39,13 +39,14 @@ class Scene():
     #        INIT         #
     #######################
     def __init__(self,exec_model):
-        self.grasp_height = 0.0195#Constant depth to the surface (blood: 0.022, regular: 0.0179)
+        self.grasp_height = 0.0325#Constant depth to the surface (blood: 0.022, regular: 0.0179)
         self.left_grasp_offset = 2
         self.right_grasp_offset = 2
-        self.approach_height = 0.04 
-        self.drop_offset = [0.003,-0.005,0] 
+        self.approach_height = 0.05 
+        self.drop_offset = [0.0035,-0.0015,-0.015] 
+        self.drop_height = 0.045
         # grasp point params
-        self.alpha = 0.70
+        self.alpha = 0.7  # Percent from the inside for grasp
         self.ksize = (3,3)
         ##### manual params ########
         self.pegs = []
@@ -57,6 +58,10 @@ class Scene():
         self.mask_frames =[]
         self.pole_flag = 0
         self.exec_model = exec_model
+        self.pub_l = rospy.Publisher('/yumi/left/endpoint_state', Pose, queue_size=1)
+        self.pub_lj = rospy.Publisher('/yumi/left/joint_states', Float32MultiArray, queue_size=1) 
+        self.pub_r = rospy.Publisher('/yumi/right/endpoint_state', Pose, queue_size=1)
+        self.pub_rj = rospy.Publisher('/yumi/right/joint_states', Float32MultiArray, queue_size=1) 
 
     ########################
     # Subscriber callbacks #
@@ -121,6 +126,44 @@ class Scene():
             self.poles_found = np.array(poles)
             # print self.poles_found
             self.pole_flag = 1
+
+    def pose_cb(self,data):
+        pos = Pose()
+        if not self.exec_model.execution.ROBOT_BUSY:
+            cpos = self.exec_model.get_curr_pose('left')
+            if cpos is not None:
+                pos.position.x = cpos.translation[0]
+                pos.position.y = cpos.translation[1]
+                pos.position.z = cpos.translation[2]
+                pos.orientation.x = cpos.quaternion[0]
+                pos.orientation.y = cpos.quaternion[1]
+                pos.orientation.z = cpos.quaternion[2]
+                pos.orientation.w = cpos.quaternion[3]
+                self.pub_l.publish(pos)
+            # Get joint states
+            jnts = Float32MultiArray()
+            jnts.data = self.exec_model.get_curr_joints('left')
+            if len(jnts.data)>0:
+                self.pub_lj.publish(jnts)
+
+            cpos = self.exec_model.get_curr_pose('right')
+            if cpos is not None:
+                pos.position.x = cpos.translation[0]
+                pos.position.y = cpos.translation[1]
+                pos.position.z = cpos.translation[2]
+                pos.orientation.x = cpos.quaternion[0]
+                pos.orientation.y = cpos.quaternion[1]
+                pos.orientation.z = cpos.quaternion[2]
+                pos.orientation.w = cpos.quaternion[3]
+                self.pub_r.publish(pos)
+
+            # Get joint states
+            jnts = Float32MultiArray()
+            jnts.data = self.exec_model.get_curr_joints('right')
+            if len(jnts.data)>0:
+                self.pub_rj.publish(jnts)
+
+            # vision_logger.info('Published left and right Gripper data')
 
 ########################### End of all callback functions #########################
     # Retuns the orientation angle for grasping in the imgage
@@ -230,13 +273,13 @@ class Scene():
         gray = cv2.cvtColor(ROI,cv2.COLOR_BGR2GRAY)
         bw_img = cv2.threshold(gray,127,255,cv2.THRESH_BINARY)[1]
         
-        cv2.imshow('Bin', bw_img)
-        cv2.waitKey(0)
+        # cv2.imshow('Bin', bw_img)
+        # cv2.waitKey(0)
         kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,self.ksize)
         bw_img = cv2.morphologyEx(bw_img, cv2.MORPH_CLOSE, kernel)
 
-        cv2.imshow('Bin_Morphed', bw_img)
-        cv2.waitKey(0)
+        # cv2.imshow('Bin_Morphed', bw_img)
+        # cv2.waitKey(0)
 
         h,w = gray.shape
         h = h/2
@@ -260,8 +303,8 @@ class Scene():
                 cv2.line(ROI, (cX,cY), (pt[0],pt[1]), (0,0,255), 1)
                 cv2.circle(ROI, (pt[0],pt[1]), 2, (0, 0, 255), -1)
         ROI = cv2.drawContours(ROI, cons, -1, (255,0,0), 1)
-        cv2.imshow('Alternate points', ROI)
-        cv2.waitKey(0)
+        # cv2.imshow('Alternate points', ROI)
+        # cv2.waitKey(0)
         print('*'*50)
         print('Cornersss', corners)
 
@@ -292,9 +335,9 @@ class Scene():
             grasp_point,grasp_index,corner_point,corner_index = min_dist_robot2points([h*2,w],gpoints,corners)#h,0 for left hand or h and w*2 for right hand
         #grip_corners = corner_pairs[grasp_index+1]
         cv2.line(img, (pole[0] , pole[1]), (grasp_point[0], grasp_point[1]), (0,255,0),2)
-        cv2.imshow("Corners",img)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        # cv2.imshow("Corners",img)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
         
         angle = self.alt_grip_angle(pole, grasp_point)
         print('Grasp point wo off' , grasp_point)
@@ -496,7 +539,7 @@ class Scene():
 
     # same function as drop_pose but it does not rely on vision
     # the offsets are hardcoded
-    def no_vision_drop_pose(self,ROI,limb,bbox,pole_pos):
+    def no_vision_drop_pose(self,limb,pole_pos):
         opposite_limb = 'right' if limb == 'left' else 'left'
         rob_pose = execution.get_curr_pose(opposite_limb)
 
@@ -619,6 +662,7 @@ class Scene():
         rospy.Subscriber("/camera/color/image_raw",Image, self.image_callback)
         rospy.Subscriber("/masks_t",ObjMasks,self.mask_callback)
         rospy.Subscriber("/darknet_ros/tracked_bbs",TrackedBoundingBoxes,self.pole_cb)
+        rospy.Subscriber('/posepub', Empty, self.pose_cb)
 
 ######################################################################
 ############################# EXECUTION ##############################
@@ -732,7 +776,7 @@ if __name__ == '__main__':
             # surgeme_no = input('Enter the surgeme number youd like to perform: ')
             surgeme_no = int(surgeme)
             surgeme_no = surgeme_no+1
-
+            input('Enter')
             if surgeme_no == 1:
                 ############ SCENE SETUP ############################
                 time.sleep(1)
@@ -748,33 +792,33 @@ if __name__ == '__main__':
                 ROI_temp = ROI.copy()
                 ROI_corner = peg_coordinates.copy()
                 grasp = None
-                for ROI_offset in [0, 5, 10, 15, 20]:    
-                    # selected_triangle_id=1
-                    # print("esto",scene.pegs[int(selected_triangle_id)])
-                    # peg_coordinates = np.array(scene.pegs[int(selected_triangle_id)]) #xmin,xmax,ymin,ymax choose peg closest to pole required 
-                    # Apply offsets to pegs
-                    peg_coordinates[0] = peg_coordinates[0]-ROI_offset
-                    peg_coordinates[2] = peg_coordinates[2]-ROI_offset
-                    peg_coordinates[1] = peg_coordinates[1]+ROI_offset
-                    peg_coordinates[3] = peg_coordinates[3]+ROI_offset
-                    print peg_coordinates
+                # for ROI_offset in [0, 5, 10, 15, 20]:    
+                #     # selected_triangle_id=1
+                #     # print("esto",scene.pegs[int(selected_triangle_id)])
+                #     # peg_coordinates = np.array(scene.pegs[int(selected_triangle_id)]) #xmin,xmax,ymin,ymax choose peg closest to pole required 
+                #     # Apply offsets to pegs
+                #     peg_coordinates[0] = peg_coordinates[0]-ROI_offset
+                #     peg_coordinates[2] = peg_coordinates[2]-ROI_offset
+                #     peg_coordinates[1] = peg_coordinates[1]+ROI_offset
+                #     peg_coordinates[3] = peg_coordinates[3]+ROI_offset
+                #     print peg_coordinates
 
-                    while len(scene.mask_frames) == 0:
-                        print("waiting to detect poles")
-                        a = 1
-                    ROI = triangle_mask[peg_coordinates[0]:peg_coordinates[1],peg_coordinates[2]:peg_coordinates[3],:] #xmin,xmax,ymin,ymax
-                    cv2.imshow("hello",ROI)
-                    cv2.waitKey(0)
-                    print(peg_coordinates)
-                    depth_ROI = scene.depth_vals[peg_coordinates[0]:peg_coordinates[1],peg_coordinates[2]:peg_coordinates[3]]
-                    grasp,g_angle,corner = scene.peg_grasp_points(ROI,peg_coordinates,limb,scene.K)# obtain corner points and grasp poiints from scene 
-                    # if we found a grasp point we continue
-                    if grasp is not None:
-                        break
-                # if grasp is None:
+                #     while len(scene.mask_frames) == 0:
+                #         print("waiting to detect poles")
+                #         a = 1
+                #     ROI = triangle_mask[peg_coordinates[0]:peg_coordinates[1],peg_coordinates[2]:peg_coordinates[3],:] #xmin,xmax,ymin,ymax
+                #     # cv2.imshow("hello",ROI)
+                #     # cv2.waitKey(0)
+                #     # print(peg_coordinates)
+                #     depth_ROI = scene.depth_vals[peg_coordinates[0]:peg_coordinates[1],peg_coordinates[2]:peg_coordinates[3]]
+                #     grasp,g_angle,corner = scene.peg_grasp_points(ROI,peg_coordinates,limb,scene.K)# obtain corner points and grasp poiints from scene 
+                #     # if we found a grasp point we continue
+                #     if grasp is not None:
+                #         break
+                # # if grasp is None:
 
-                cv2.imshow("New ROI",ROI_temp)
-                cv2.waitKey(0)
+                # cv2.imshow("New ROI",ROI_temp)
+                # cv2.waitKey(0)
                 grasp,g_angle,corner = scene.alternate_grasp_points(ROI_temp,ROI_corner,limb,scene.K)# obtain corner points and grasp poiints from scene 
                 ############ PERFORM APPROACH ############################
                 execution.S1(corner,g_angle,limb)#Perform Approach
@@ -806,24 +850,24 @@ if __name__ == '__main__':
                 drop_triangle_id=scene.closest_ROI_to_gripper()
                 # selected_triangle_id=1
 
-                peg_coordinates = []
-                peg_coordinates = np.array(scene.pegs[drop_triangle_id]) #Choose peg closest to opposite limb gripper
-                peg_coordinates = peg_coordinates.reshape(4)
-                peg_coordinates[0] = peg_coordinates[0]-ROI_offset
-                peg_coordinates[2] = peg_coordinates[2]-ROI_offset
-                peg_coordinates[1] = peg_coordinates[1]+ROI_offset
-                peg_coordinates[3] = peg_coordinates[3]+ROI_offset
+                # peg_coordinates = []
+                # peg_coordinates = np.array(scene.pegs[drop_triangle_id]) #Choose peg closest to opposite limb gripper
+                # peg_coordinates = peg_coordinates.reshape(4)
+                # peg_coordinates[0] = peg_coordinates[0]-ROI_offset
+                # peg_coordinates[2] = peg_coordinates[2]-ROI_offset
+                # peg_coordinates[1] = peg_coordinates[1]+ROI_offset
+                # peg_coordinates[3] = peg_coordinates[3]+ROI_offset
 
-                while len(scene.mask_frames) == 0:
-                    print("waiting to detect masks for pegs")
-                    a = 1
+                # while len(scene.mask_frames) == 0:
+                #     print("waiting to detect masks for pegs")
+                #     a = 1
 
                 transfer_flag = 0
-                ROI = scene.mask_frames[drop_triangle_id][peg_coordinates[0]:peg_coordinates[1],peg_coordinates[2]:peg_coordinates[3],:] #xmin,xmax,ymin,ymax
-                drop_pt = scene.no_vision_drop_pose(ROI,limb,peg_coordinates,drop_pole_pose)
+                # ROI = scene.mask_frames[drop_triangle_id][peg_coordinates[0]:peg_coordinates[1],peg_coordinates[2]:peg_coordinates[3],:] #xmin,xmax,ymin,ymax
+                drop_pt = scene.no_vision_drop_pose(limb,drop_pole_pose)
                 execution.S6(drop_pt,opposite_limb)#Perform Approach
             if surgeme_no == 7:
-                execution.S7(opposite_limb,limb)#Perform Drop
+                execution.S7(opposite_limb,limb, scene.drop_height)#Perform Drop
                 finish_time = datetime.datetime.now()
                 time_diff = finish_time - start_time
                 execution_time = time_diff.total_seconds() * 1000

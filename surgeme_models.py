@@ -89,37 +89,43 @@ class Surgeme_Models():
 
     def left_close(self):
         self.ROBOT_BUSY = True
-        self.y.left.close_gripper(force=12,wait_for_res=False)
+        time.sleep(0.1)
+        self.y.left.close_gripper(force=12)
         time.sleep(0.1)
         self.ROBOT_BUSY = False
 
     def left_open(self, gripper_value=0.005):
         self.ROBOT_BUSY = True
+        time.sleep(0.1)
         self.y.left.move_gripper(gripper_value)
+        time.sleep(0.1)
         self.ROBOT_BUSY = False
 
     def right_close(self):
         self.ROBOT_BUSY = True
-        self.y.right.close_gripper(force=12,wait_for_res=False)
+        time.sleep(0.1)
+        self.y.right.close_gripper(force=12)
         time.sleep(0.1)
         self.ROBOT_BUSY = False
 
     def right_open(self, gripper_value=0.005):
         self.ROBOT_BUSY = True
+        time.sleep(0.1)
         self.y.right.move_gripper(gripper_value)
+        time.sleep(0.1)
         self.ROBOT_BUSY = False
 
     def goto_joint_state(self,joints,limb):
         self.ROBOT_BUSY = True
         arm = self.y.right if limb == 'right' else self.y.left
         joint_state = YuMiState(vals=joints)
-        try:
-            arm.goto_state(joint_state)
-        except:
-            time.sleep(0.01)
-            # try a second time
-            arm.goto_state(joint_state)
-        time.sleep(0.5)
+        # try:
+        arm.goto_state(joint_state,False)
+        # except:
+        #     time.sleep(1)
+        #     # try a second time
+        #     arm.goto_state(joint_state)
+        time.sleep(1.5)
         self.ROBOT_BUSY = False
 
     def joint_orient(self,limb,j_val,offset = 150):
@@ -165,9 +171,9 @@ class Surgeme_Models():
         self.y.set_v(80)
         arm = self.y.right if limb == 'right' else self.y.left
         if limb == "left":
-            self.left_open(0.006)
+            self.left_open(0.005)
         else:
-            self.right_open(0.006)
+            self.right_open(0.005)
         curr_pos = arm.get_pose()
         print "Current location: ", curr_pos.translation
         # print "Approaching desired peg: ",peg
@@ -184,12 +190,12 @@ class Surgeme_Models():
 
     def surgeme2(self,peg,desired_pos,limb):
         self.ROBOT_BUSY = True
-        self.y.set_v(25)
         arm = self.y.right if limb == 'right' else self.y.left
         curr_pos = arm.get_pose()
-
+        self.y.set_v(25)
         print "Current location: ", curr_pos.translation
         print "Approaching desired peg: ",peg
+        
         des_pos = curr_pos
         print("des pos",des_pos)
         #print "Desired_POS",desired_pos
@@ -198,10 +204,10 @@ class Surgeme_Models():
         #print "DES",des_pos_left
         arm.goto_pose(des_pos,False,True,False)
                 # Block the robot only for 0.5 more seconds
-        time.sleep(0.5)
+        time.sleep(1.0)
         self.ROBOT_BUSY = False
-                # wait for the rest of the time unblocked
-        time.sleep(2.5)
+        # wait for the rest of the time unblocked
+        # time.sleep(0.5)
                 # Make the robot bussy for the post-movement status read
         self.ROBOT_BUSY = True
         curr_pos = arm.get_pose()
@@ -219,7 +225,7 @@ class Surgeme_Models():
         # self.y.set_v(80)
         arm = self.y.right if limb == 'right' else self.y.left
         arm.goto_pose_delta((0,0,0.05))
-        time.sleep(1)
+        time.sleep(0.5)
         self.ROBOT_BUSY = False
 
         # print "Shuting yumi"
@@ -263,13 +269,14 @@ class Surgeme_Models():
             des_pos_oposite_limb.joints = self.transfer_pose_high_right[oposite_limb_angles].joints
 
         oposite_arm.goto_state(des_pos_oposite_limb)
-        time.sleep(0.1)
+        time.sleep(1)
         self.ROBOT_BUSY = False
 
         ################################ DO Transer pose lose #######
 
         self.ROBOT_BUSY = True
         curr_pos_limb = arm.get_state()
+        # time.sleep(0.5)
         des_pos_limb = curr_pos_limb
         if limb == 'left':
             des_pos_limb.joints = self.transfer_pose_low_left[limb_angles].joints
@@ -277,31 +284,38 @@ class Surgeme_Models():
         else:
             des_pos_limb.joints = self.transfer_pose_low_right[limb_angles].joints
             self.goto_joint_state(self.transfer_pose_low_right[limb_angles].joints,'right')
-        time.sleep(0.1)
+        time.sleep(1)
         self.ROBOT_BUSY = False
 
 #########################################################################################
         self.ROBOT_BUSY = True
         curr_pos_oposite_limb = oposite_arm.get_state()
         des_pos_oposite_limb = curr_pos_oposite_limb
+        # time.sleep(0.5)
         if limb == 'left':
-            self.right_open(0.006) 
+            print("got HERE")
+            # self.right_open(0.0055) 
+            self.y.right.open_gripper()
+            print("got HERE After Opening")
             time.sleep(0.5)
             des_pos_oposite_limb.joints = self.transfer_pose_low_left[oposite_limb_angles].joints
             self.goto_joint_state(self.transfer_pose_low_left[oposite_limb_angles].joints,'right')
+            print("got HERE 2")
         else:
-            self.left_open(0.006) 
+            self.left_open(0.0055) 
             time.sleep(0.5)
             des_pos_oposite_limb.joints = self.transfer_pose_low_right[oposite_limb_angles].joints
             self.goto_joint_state(self.transfer_pose_low_right[oposite_limb_angles].joints,'left')
         time.sleep(0.5)
-        oposite_arm.goto_pose_delta([0.002,0.000,-0.005])
+        print("got HERE 3")
+        oposite_arm.goto_pose_delta([0.000,0.000,-0.005])
+        print("got HERE 4")
         # time.sleep(0.5)
         # oposite_arm.goto_state(des_pos_oposite_limb)
-        time.sleep(0.1)
+        time.sleep(0.5)
         self.ROBOT_BUSY = False
 
-        time.sleep(1)
+        # time.sleep(1)
         # print "Shuting yumi"
         # self.y.stop()
         # Go above the transfer pose
@@ -370,25 +384,30 @@ class Surgeme_Models():
         self.ROBOT_BUSY = False
 
 
-    def surgeme7(self,limb): #Drop
+    def surgeme7(self,limb, drop_ht): #Drop
         self.ROBOT_BUSY = True
         self.y.set_v(20)
-        z=0.030
+        z=drop_ht
         arm = self.y.right if limb == 'right' else self.y.left
+        
+        # uncoment
         curr_pos = arm.get_pose()
         delta_z=z-curr_pos.translation[2]
+        
+        # uncoment
         arm.goto_pose_delta([0,0,delta_z])
         time.sleep(0.5)
+        # uncoment
         self.ROBOT_BUSY = False
-        time.sleep(1)
+        # time.sleep(1)
         if limb == 'left':
             self.left_open(0.006)
         else:
             self.right_open(0.006)
-        time.sleep(1.5)
+        time.sleep(0.5)
         self.ROBOT_BUSY = True
         arm.goto_pose_delta([0,0,-delta_z])
-        time.sleep(0.1)
+        # time.sleep(0.1)
         self.ROBOT_BUSY = False
         # print "Shuting yumi"
         # self.y.stop()
