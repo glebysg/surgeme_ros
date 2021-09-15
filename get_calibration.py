@@ -17,12 +17,18 @@ from math import sqrt
 from yumi_homography import affine_matrix_from_points
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+import argparse
 
 # Start streaming
+parser = parser = argparse.ArgumentParser()
+parser.add_argument('-r',dest='robot', help="robot")
+args = parser.parse_args()
+robot = "taurus" if args.robot == "taurus" else ""
 pipeline = None
 count = 0
-img_path ='./data/'
-homography_path = "homography.txt"
+# img_path ='./data/'
+img_path ='../taurus_control/data/'
+homography_path = "homography"+robot+".txt"
 # Configure depth and color streams
 # pipeline = rs.pipeline()
 # config = rs.config()
@@ -37,8 +43,8 @@ homography_path = "homography.txt"
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 x_grid = 9
 y_grid = 6
-images = glob(join(img_path,'*.jpg'))
-depth = glob(join(img_path,'*.npy'))
+images = glob(join(img_path,'*'+robot+'.jpg'))
+depth = glob(join(img_path,'*'+robot+'.npy'))
 images = filter(lambda f: 'img' in f, images)
 depth = filter(lambda f: 'depth' in f, depth)
 images.sort()
@@ -50,7 +56,7 @@ imgpoints = [] # 2d image points.
 # frames = pipeline.wait_for_frames()
 # color_frame = frames.get_color_frame()
 # color_intrin = color_frame.profile.as_video_stream_profile().intrinsics
-color_intrin = np.load(join(img_path, 'intrinsics.npy'))
+color_intrin = np.load(join(img_path, 'intrinsics'+robot+'.npy'))
 selected_coords = [[[0,0], [2,2], [1,5], [5,1], [3,4], [3,8]],
                    [[0,4], [2,1], [1,7], [4,3], [5,6], [3,7]]]
 
@@ -63,18 +69,18 @@ for iname, dname, selected_coords in zip(images, depth, selected_coords):
     objp = np.zeros((y_grid,x_grid,3), np.float32)
     for i in range(y_grid):
         for j in range(x_grid):
-            objp[i,j,1] = i*2.45
-            objp[i,j,0] = j*2.45
+            objp[i,j,1] = i*1.32
+            objp[i,j,0] = j*1.32
     # Divide all the points by 100 so they are in meters
     objp = objp/100.0
     # add the height to the second image
     if "_img1" in iname:
-        objp[:,:,2] = np.ones((y_grid,x_grid))*-0.05562
+        objp[:,:,2] = np.ones((y_grid,x_grid))*0.05562
     # Flatten the array
     objp = np.array(objp, dtype=np.float64).reshape(-1,1,3).tolist()
     # get the color image
     img = cv2.imread(iname)
-    img = cv2.convertScaleAbs(img, alpha=1.5, beta=0)
+    img = cv2.convertScaleAbs(img, alpha=1.5, beta=50)
     gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
     # get the depth image
     depth = np.load(dname)
@@ -84,7 +90,7 @@ for iname, dname, selected_coords in zip(images, depth, selected_coords):
     # Find the chess board corners
     ret, corners = cv2.findChessboardCorners(gray, (x_grid,y_grid),
             flags=cv2.CALIB_CB_ADAPTIVE_THRESH + cv2.CALIB_CB_NORMALIZE_IMAGE)
-
+    print("found cornes?", ret)
     # If found, add object points, image points (after refining them)
     if ret == True:
         corners2 = cv2.cornerSubPix(gray,corners,(11,11),(-1,-1),criteria)
@@ -98,6 +104,7 @@ for iname, dname, selected_coords in zip(images, depth, selected_coords):
             col = int(col)
             row = int(row)
             z = depth[row,col]
+            print(row,col)
             # skip the point if the depth makes no sense
             if z > 1:
                 continue
@@ -107,6 +114,8 @@ for iname, dname, selected_coords in zip(images, depth, selected_coords):
             imgpoints.append(pointcloud)
             # append the world point to the obj array
             objpoints.append(world)
+            img = cv2.putText(img, str(coord), (col,row), cv2.FONT_HERSHEY_SIMPLEX, 
+                   1, (255,0,0), 2, cv2.LINE_AA)
         img = cv2.drawChessboardCorners(img, (x_grid,y_grid), corners2,ret)
         cv2.imshow('img',img)
         cv2.waitKey(0)

@@ -52,6 +52,7 @@ def main():
         pose_left.append(arm_pose_left['left'].translation)
         pose_right.append(arm_pose_right["right"].translation)
 
+
     pose_left=np.array(pose_left)
     pose_right=np.array(pose_right)
 

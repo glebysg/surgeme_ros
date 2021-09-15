@@ -12,7 +12,7 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from yumi_homography_functions import *
-
+from taurus_homography_functions import *
 ################################
 # Data parser functionj
 # inputs:
@@ -36,7 +36,11 @@ from yumi_homography_functions import *
       # 9         11                     3         5
       # 8         12                     2         6
            # 7                               1
-H = np.loadtxt("./data/homography.txt")
+# Yumi Homography
+# H = np.loadtxt("./data/homography.txt")
+
+# Taurus Homography
+H = np.loadtxt("./data/homographytaurus.txt")
 
 def camera_to_world(point):
     global H
@@ -213,12 +217,15 @@ def get_3dpt_depth(pixel, depth, k):
     y = (v - cy)*depth/fy
     return np.array([x,y,depth])
 
-def cam2robot(x,y,z,K,hand):
+def cam2robot(x,y,z,K,hand, robot='yumi'):
     cam_points = get_3dpt_depth([x,y],z,K)
     cam_points = np.concatenate((cam_points,[1]))
     world_points = camera_to_world(cam_points)
     # print(world_points)
-    robot_pose = world_to_yumi(world_points, hand)
+    if robot=='Yumi':
+        robot_pose = world_to_yumi(world_points, hand)
+    elif robot=='Taurus':
+        robot_pose = world_to_taurus(world_points, hand)
     robot_pose = robot_pose.reshape(3)
     return robot_pose
 
@@ -244,7 +251,6 @@ def normal_to_line(point_1, point_2):
 
 # Return the four corner points given bounding boxes
 def create_bbox_rob_points(bbox,z):
-
     pts = []
     a = [bbox[0],bbox[2],z]
     b = [bbox[0],bbox[3],z]
@@ -300,7 +306,7 @@ def get_max_depth(depth_mat):
 ######### Get the max depth index value within a given ROI ############
     max_depth = np.amin(depth_mat)
     if max_depth < 0.3:
-        print("Changing Depth")
+        # print("Changing Depth")
         max_depth = 0.33
     return max_depth
 

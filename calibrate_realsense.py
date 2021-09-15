@@ -18,18 +18,23 @@ import pickle
 from pprint import pprint as pp
 import cv2
 import pyrealsense2 as rs
+import argparse
 
 
 class realsense_calib():
-    def __init__(self):
+    def __init__(self, robot):
         self.save_img=True
         self.count = 0
-        self.img_path ='data'
         self.bridge = CvBridge()
         self.cloud_frame =[]
         self.color_frame =[]
         self.depth_frame =[]
         self.P = []
+        self.robot = robot
+        if self.robot == 'taurus':
+            self.img_path ='../taurus_control/data'
+        else:
+            self.img_path ='data'
         rospy.init_node('listener', anonymous=True)
         # rospy.Subscriber("/camera/aligned_depth_to_color/color/points",msg_PointCloud2, self.cloud_callback)
         rospy.Subscriber('/camera/aligned_depth_to_color/image_raw', Image, self.depth_cb)
@@ -57,10 +62,10 @@ class realsense_calib():
         keypress = cv2.waitKey(1)
         if ord('y') == keypress:
             # save the color image
-            cv2.imwrite(join(self.img_path,'calibration_img'+str(self.count))+".jpg",self.color_frame)
+            cv2.imwrite(join(self.img_path,'calibration_img'+str(self.count))+self.robot+".jpg",self.color_frame)
             # save the pointcloud
-            np.save(join(self.img_path,'calibration_depth'+str(self.count)),self.depth_frame)
-            np.save(join(self.img_path,'intrinsics'),self.K)
+            np.save(join(self.img_path,'calibration_depth'+str(self.count))+self.robot,self.depth_frame)
+            np.save(join(self.img_path,'intrinsics'+self.robot),self.K)
             # for points in self.cloud_frame:
                 # pixel_coord.append(list(points[:3]) + self.point_2_pixel(points[:3]))
                 # np.save(join(self.img_path,'pointcloud_'+str(self.count)), pixel_coord)
@@ -129,7 +134,11 @@ class realsense_calib():
         return list(pix[:2])
 
 if __name__ == '__main__':
-    real_c = realsense_calib()
+    parser = parser = argparse.ArgumentParser()
+    parser.add_argument('-r',dest='robot', help="robot")
+    args = parser.parse_args()
+    robot = "taurus" if args.robot=="taurus" else ""
+    real_c = realsense_calib(robot)
     print("Press Y to save the images for calibration")
     while not rospy.is_shutdown():
         pass
