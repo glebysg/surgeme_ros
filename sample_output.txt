@@ -1,0 +1,575 @@
+TRIAL 1
+
+11:02:29 (surgeme_exec_2) isat@isat-desktop surgeme_ros ±|master ✗|→ python live_execution.py 
+ERROR:root:Unable to load ROS! Will not be able to use client-side motion planner!
+Moved to neutral :)
+Moved to neutral :)
+('ignoring with the first condition', 1, 0.24772174429747246, u'none', 0)
+('ignoring with the first condition', 1, 0.27329022715526896, u'none', 0)
+('ignoring with the first condition', 1, 0.24245225750661464, u'none', 0)
+('ignoring with the first condition', 6, 0.24134962518915323, u'none', 0)
+('ignoring with the first condition', 6, 0.24670184996694328, u'none', 0)
+('ignoring with the first condition', 5, 0.2677291558976765, u'none', 0)
+('ignoring with the first condition', 5, 0.288690892655293, u'none', 0)
+('ignoring with the first condition', 5, 0.3070610636506481, u'none', 0)
+('ignoring with the first condition', 5, 0.32183824253209414, u'none', 0)
+('ignoring with the first condition', 5, 0.332821874556031, u'none', 0)
+('ignoring with the first condition', 5, 0.3407058666917911, u'none', 0)
+('ignoring with the first condition', 5, 0.34619792039276936, u'none', 0)
+('ignoring with the first condition', 5, 0.3500336001848866, u'none', 0)
+('ignoring with the first condition', 5, 0.3527030474802373, u'none', 0)
+('ignoring with the first condition', 5, 0.35469521738848075, u'none', 0)
+('ignoring with the first condition', 5, 0.35610047745577617, u'none', 0)
+('ignoring with the first condition', 5, 0.3570342944161562, u'none', 0)
+('ignoring with the first condition', 5, 0.357692736070484, u'none', 0)
+('ignoring with the first condition', 5, 0.35829741697025375, u'none', 0)
+('ignoring with the first condition', 5, 0.3587584517802226, u'none', 0)
+('ignoring with the first condition', 5, 0.3590810196848808, u'none', 0)
+('ignoring with the first condition', 5, 0.35928453327032017, u'none', 0)
+('ignoring with the first condition', 5, 0.3594853338250388, u'none', 0)
+('ignoring with the first condition', 5, 0.3596175627008415, u'none', 0)
+('ignoring with the first condition', 5, 0.3596633505129716, u'none', 0)
+('ignoring with the first condition', 5, 0.35971296055498253, u'none', 0)
+('ignoring with the first condition', 5, 0.3596799436029559, u'none', 0)
+('ignoring with the first condition', 5, 0.3597783602173077, u'none', 0)
+('ignoring with the first condition', 5, 0.35984432942778777, u'none', 0)
+('ignoring with the first condition', 1, 0.24733767032191575, u'none', 0)
+('ignoring with the first condition', 1, 0.2724727161766503, u'none', 0)
+('ignoring with the first condition', 1, 0.24127675895069403, u'none', 0)
+('ignoring with the first condition', 6, 0.2411548370583175, u'none', 0)
+('ignoring with the first condition', 5, 0.24799795146059173, u'none', 0)
+('ignoring with the first condition', 5, 0.2704276774291915, u'none', 0)
+('ignoring with the first condition', 5, 0.29132440118281977, u'none', 0)
+('ignoring with the first condition', 5, 0.3094425174841537, u'none', 0)
+('ignoring with the first condition', 5, 0.3237858204087496, u'none', 0)
+('ignoring with the first condition', 1, 0.24728501581033915, u'none', 0)
+('ignoring with the first condition', 1, 0.27229899673682806, u'none', 0)
+('ignoring with the first condition', 1, 0.2411012569318234, u'none', 0)
+('ignoring with the first condition', 6, 0.2411482826269219, u'none', 0)
+('ignoring with the first condition', 5, 0.24800214953578728, u'none', 0)
+('ignoring with the first condition', 5, 0.2704005992922666, u'none', 0)
+('ignoring with the first condition', 5, 0.29128123676229606, u'none', 0)
+('ignoring with the first condition', 1, 0.24730164233974017, u'none', 0)
+('ignoring with the first condition', 1, 0.2722172732877393, u'none', 0)
+('ignoring with the first condition', 1, 0.24096284882325436, u'none', 0)
+('ignoring with the first condition', 6, 0.24119189594446508, u'none', 0)
+('ignoring with the first condition', 5, 0.24819092938280857, u'none', 0)
+('ignoring with the first condition', 5, 0.27070444887750156, u'none', 0)
+('ignoring with the first condition', 1, 0.24734306612624743, u'none', 0)
+('ignoring with the first condition', 1, 0.27223661466816174, u'none', 0)
+('ignoring with the first condition', 1, 0.2410599301833704, u'none', 0)
+('ignoring with the first condition', 6, 0.24120796902383757, u'none', 0)
+('ignoring with the first condition', 5, 0.2478856349954339, u'none', 0)
+('ignoring with the first condition', 5, 0.27032695403123497, u'none', 0)
+('ignoring with the first condition', 5, 0.29121342979845566, u'none', 0)
+('ignoring with the first condition', 5, 0.30940832380569766, u'none', 0)
+('ignoring with the first condition', 5, 0.3237686832270177, u'none', 0)
+('ignoring with the first condition', 5, 0.3343611809516458, u'none', 0)
+('ignoring with the first condition', 5, 0.3418605218022314, u'none', 0)
+('ignoring with the first condition', 5, 0.3470659245191109, u'none', 0)
+('ignoring with the first condition', 5, 0.3507344843206738, u'none', 0)
+('ignoring with the first condition', 5, 0.3533651697301447, u'none', 0)
+('ignoring with the first condition', 5, 0.3551999273391424, u'none', 0)
+('ignoring with the first condition', 5, 0.356486519012211, u'none', 0)
+('ignoring with the first condition', 5, 0.35745616069157443, u'none', 0)
+('ignoring with the first condition', 5, 0.35817442642827585, u'none', 0)
+('ignoring with the first condition', 5, 0.358710213463855, u'none', 0)
+('ignoring with the first condition', 5, 0.3590687774367059, u'none', 0)
+('ignoring with the first condition', 5, 0.35938159928213415, u'none', 0)
+('ignoring with the first condition', 5, 0.3595606790364245, u'none', 0)
+('ignoring with the first condition', 5, 0.35970579947814346, u'none', 0)
+('ignoring with the first condition', 5, 0.35982403981963323, u'none', 0)
+('ignoring with the first condition', 5, 0.3599631731479865, u'none', 0)
+('ignoring with the first condition', 5, 0.3600208071728155, u'none', 0)
+('ignoring with the first condition', 5, 0.3600671184839837, u'none', 0)
+('ignoring with the first condition', 5, 0.3600948051061555, u'none', 0)
+('ignoring with the first condition', 5, 0.3601478663494696, u'none', 0)
+('ignoring with the first condition', 5, 0.36012601413006373, u'none', 0)
+('ignoring with the first condition', 5, 0.3601154534148054, u'none', 1)
+('ignoring with the first condition', 1, 0.36127993821533566, u'none', 1)
+('ignoring with the first condition', 1, 0.6242402201658283, u'none', 1)
+('ignoring with the first condition', 1, 0.7562781712965938, u'none', 1)
+('ignoring with the first condition', 1, 0.80653588480939, u'none', 1)
+('ignoring with the first condition', 1, 0.8372785929964947, u'none', 1)
+('surgeme', 1, 'probability:', 0.8646099202721657, 'On object: ', 2, 'with arm', u'right')
+JUST CONFIRMING
+('Grasp Points', array([[38, 18],
+       [56, 36],
+       [33, 42]]))
+('Grip Corners:', array([[65, 10],
+       [52, 65]]))
+('Dx, Dy', 13, -55)
+('Orientation Angle:', 103.29857033049429)
+Changing Depth
+Changing Depth
+('Joint 5 degrees ', -41.18)
+Current location:  [ 0.31586    -0.12321001  0.06987   ]
+Current location after moving:  [ 0.3221  -0.11788  0.06513]
+Finished Approach
+Performed approach
+('ignoring with the first condition', 1, 0.8881349745445621, u'right', 1)
+('ignoring with the first condition', 1, 0.9059578499042695, u'right', 1)
+('ignoring with the first condition', 1, 0.9183324621675336, u'right', 1)
+('ignoring with the first condition', 1, 0.9269475089514871, u'right', 1)
+('ignoring with the first condition', 1, 0.9328842451261888, u'right', 1)
+('ignoring with the first condition', 1, 0.9390822911624361, u'right', 1)
+('ignoring with the first condition', 1, 0.9463833917841289, u'right', 1)
+('ignoring with the first condition', 1, 0.9542322494652701, u'right', 1)
+('ignoring with the first condition', 1, 0.9619460266628242, u'right', 1)
+('ignoring with the first condition', 1, 0.9693116326260497, u'right', 1)
+('ignoring with the first condition', 1, 0.9754739804251131, u'right', 1)
+('ignoring with the first condition', 1, 0.9804187594057185, u'right', 1)
+('ignoring with the first condition', 1, 0.9843615433068343, u'right', 1)
+('ignoring with the first condition', 1, 0.9873563282697772, u'right', 1)
+('ignoring with the first condition', 1, 0.9894092061164041, u'right', 1)
+('ignoring with the first condition', 1, 0.9908807306199364, u'right', 1)
+('ignoring with the first condition', 1, 0.9920120904990496, u'right', 1)
+('ignoring with the first condition', 1, 0.9929473651556542, u'right', 1)
+('ignoring with the first condition', 1, 0.9937253423583566, u'right', 1)
+('ignoring with the first condition', 1, 0.9943476356739667, u'right', 1)
+('ignoring with the first condition', 1, 0.9948396138150227, u'right', 1)
+('ignoring with the first condition', 1, 0.995265593627357, u'right', 1)
+('ignoring with the first condition', 1, 0.9956397035690709, u'right', 1)
+('ignoring with the first condition', 1, 0.995965728843872, u'right', 1)
+('ignoring with the first condition', 1, 0.9962229877659438, u'right', 1)
+('ignoring with the first condition', 1, 0.9964043906129798, u'right', 1)
+('ignoring with the first condition', 1, 0.9965530649789085, u'right', 1)
+('ignoring with the first condition', 1, 0.9967011913507466, u'right', 1)
+('ignoring with the first condition', 1, 0.9968429652141597, u'right', 1)
+('ignoring with the first condition', 1, 0.9969681907382894, u'right', 1)
+('ignoring with the first condition', 1, 0.9970185505452064, u'right', 1)
+('ignoring with the first condition', 1, 0.9970290972572693, u'right', 1)
+('ignoring with the first condition', 1, 0.9971259226941006, u'right', 1)
+('ignoring with the first condition', 1, 0.997310381826735, u'right', 1)
+('ignoring with the first condition', 1, 0.997513650369256, u'right', 1)
+('ignoring with the first condition', 1, 0.9977028807932877, u'right', 1)
+('ignoring with the first condition', 1, 0.9978515867414144, u'right', 1)
+('ignoring with the first condition', 1, 0.9979625813411467, u'right', 1)
+('ignoring with the first condition', 1, 0.998031564725307, u'right', 1)
+('ignoring with the first condition', 1, 0.9980713442918248, u'none', 0)
+('ignoring with the first condition', 1, 0.9980953324024618, u'none', 0)
+('ignoring with the first condition', 1, 0.9981113646902923, u'none', 0)
+('ignoring with the first condition', 1, 0.9981225281149354, u'none', 0)
+('ignoring with the first condition', 1, 0.998130841562614, u'none', 0)
+('ignoring with the first condition', 1, 0.9981376111487232, u'none', 0)
+('ignoring with the first condition', 1, 0.9981427180863565, u'none', 0)
+('ignoring with the first condition', 1, 0.9981467562458481, u'none', 0)
+('ignoring with the first condition', 1, 0.9981499628944944, u'none', 0)
+('ignoring with the first condition', 1, 0.9981526946428374, u'none', 0)
+('ignoring with the first condition', 1, 0.9981548324976424, u'none', 0)
+('ignoring with the first condition', 1, 0.9981566140855446, u'none', 0)
+('ignoring with the first condition', 1, 0.9981581580457513, u'none', 0)
+('ignoring with the first condition', 1, 0.9981595832508465, u'right', 1)
+('ignoring with the first condition', 1, 0.998155426282456, u'right', 1)
+('ignoring with the first condition', 1, 0.9981285850053813, u'right', 1)
+('ignoring with the first condition', 1, 0.9980714630388261, u'right', 1)
+('ignoring with the first condition', 1, 0.997999743236041, u'right', 1)
+('ignoring with the first condition', 1, 0.9979174680674451, u'right', 1)
+('ignoring with the first condition', 1, 0.9978038725560738, u'right', 1)
+('ignoring with the first condition', 1, 0.9976182817838501, u'right', 1)
+('ignoring with the first condition', 1, 0.9973252030804649, u'right', 1)
+('ignoring with the first condition', 1, 0.9968671312998285, u'right', 1)
+('ignoring with the first condition', 1, 0.9962086723022022, u'right', 1)
+('ignoring with the first condition', 1, 0.9953730611242244, u'right', 1)
+('ignoring with the first condition', 1, 0.9944503075127873, u'right', 1)
+('ignoring with the first condition', 1, 0.9934812550839852, u'right', 1)
+('ignoring with the first condition', 1, 0.9928347803913222, u'right', 1)
+('ignoring with the first condition', 1, 0.99248942980987, u'right', 1)
+('ignoring with the first condition', 1, 0.9909430023490413, u'right', 1)
+('ignoring with the first condition', 1, 0.9886190941231028, u'right', 1)
+('ignoring with the first condition', 1, 0.9865766845548751, u'right', 1)
+('ignoring with the first condition', 1, 0.9846527148232643, u'right', 1)
+('ignoring with the first condition', 1, 0.982823970554207, u'right', 1)
+('ignoring with the first condition', 1, 0.9814775335911368, u'right', 1)
+('ignoring with the first condition', 1, 0.9806511947649179, u'right', 1)
+('ignoring with the first condition', 1, 0.9802191900506667, u'right', 1)
+('ignoring with the first condition', 1, 0.9800020698188817, u'right', 1)
+('ignoring with the first condition', 1, 0.9801779570389932, u'none', 0)
+('ignoring with the first condition', 1, 0.9804252898194207, u'none', 0)
+('ignoring with the first condition', 1, 0.9806686207332663, u'none', 0)
+('ignoring with the first condition', 1, 0.9808920001156066, u'none', 0)
+('ignoring with the first condition', 1, 0.981094136931744, u'none', 0)
+('ignoring with the first condition', 1, 0.9812758112804136, u'none', 0)
+('ignoring with the first condition', 1, 0.981438605856989, u'none', 0)
+('ignoring with the first condition', 1, 0.9815821583848957, u'none', 0)
+('ignoring with the first condition', 1, 0.9817084041859588, u'none', 0)
+('ignoring with the first condition', 1, 0.981819858464584, u'none', 0)
+('ignoring with the first condition', 1, 0.9819342115465802, u'right', 1)
+('ignoring with the first condition', 1, 0.9820197354188386, u'right', 1)
+('ignoring with the first condition', 1, 0.9820991788031712, u'right', 1)
+('ignoring with the first condition', 1, 0.9820973403561092, u'right', 1)
+('ignoring with the first condition', 1, 0.982027553255421, u'right', 1)
+('ignoring with the first condition', 1, 0.9819836395513488, u'right', 1)
+('ignoring with the first condition', 1, 0.9820499699756308, u'right', 1)
+('ignoring with the first condition', 1, 0.9821777175485049, u'right', 1)
+('ignoring with the first condition', 1, 0.9823495543874783, u'right', 1)
+('ignoring with the first condition', 1, 0.9825733550913814, u'right', 1)
+('ignoring with the first condition', 1, 0.9828577100552307, u'right', 1)
+('ignoring with the first condition', 1, 0.9832316534820248, u'right', 1)
+('ignoring with the first condition', 1, 0.9836079560351162, u'right', 1)
+('ignoring with the first condition', 1, 0.9839282266353849, u'right', 1)
+('ignoring with the first condition', 1, 0.9841887715660396, u'right', 1)
+('ignoring with the first condition', 1, 0.9843352088651485, u'right', 1)
+('ignoring with the first condition', 1, 0.9843883423451913, u'right', 1)
+('ignoring with the first condition', 1, 0.9844383633011772, u'right', 1)
+('ignoring with the first condition', 1, 0.9844754497599277, u'right', 1)
+('ignoring with the first condition', 1, 0.98453772789748, u'right', 1)
+('ignoring with the first condition', 1, 0.9846233593188629, u'right', 1)
+('ignoring with the first condition', 1, 0.9847960532670288, u'none', 0)
+('ignoring with the first condition', 1, 0.9848938707853849, u'none', 0)
+('ignoring with the first condition', 1, 0.9849620994105467, u'none', 0)
+('ignoring with the first condition', 1, 0.9850200443882303, u'none', 0)
+('ignoring with the first condition', 1, 0.9850704763373971, u'none', 0)
+('ignoring with the first condition', 1, 0.9851135097035046, u'none', 0)
+('ignoring with the first condition', 1, 0.9851487957874437, u'none', 0)
+('ignoring with the first condition', 1, 0.9851779513403147, u'none', 0)
+('ignoring with the first condition', 1, 0.9852016713132467, u'none', 0)
+('ignoring with the first condition', 1, 0.9852203003153004, u'none', 0)
+('ignoring with the first condition', 1, 0.9852356897167027, u'none', 0)
+('ignoring with the first condition', 1, 0.9852463363649181, u'none', 0)
+('ignoring with the first condition', 1, 0.9852573290604543, u'none', 0)
+('ignoring with the first condition', 1, 0.985267744706754, u'right', 1)
+('ignoring with the first condition', 1, 0.9852103494500556, u'right', 1)
+('ignoring with the first condition', 1, 0.9850546289799095, u'right', 1)
+('ignoring with the first condition', 1, 0.984782758164886, u'right', 1)
+('ignoring with the first condition', 1, 0.9843587710341625, u'right', 1)
+('ignoring with the first condition', 1, 0.9836724320223265, u'right', 1)
+('ignoring with the first condition', 1, 0.9825408991178857, u'right', 1)
+('ignoring with the first condition', 1, 0.9805323265038937, u'right', 1)
+('ignoring with the first condition', 1, 0.9760804327155638, u'right', 1)
+('ignoring with the first condition', 1, 0.963674138866418, u'right', 1)
+('ignoring with the first condition', 1, 0.9280109077992449, u'right', 1)
+('ignoring with the first condition', 1, 0.8448503683681343, u'right', 1)
+('ignoring with the first condition', 1, 0.7075218169181129, u'right', 1)
+('ignoring with the first condition', 1, 0.5887713062341731, u'right', 1)
+('ignoring with the first condition', 1, 0.5277247900000177, u'right', 1)
+('surgeme', 2, 'probability:', 0.5000458073153647, 'On object: ', 2, 'with arm', u'right')
+Current location:  [ 0.36589003 -0.08055001  0.03006   ]
+Approaching desired peg:  1
+('des pos', RigidTransform(rotation=np.array([[-0.2826467 , -0.95756179,  0.05644694],
+       [-0.88248189,  0.2826467 ,  0.37594755],
+       [-0.37594755,  0.05644694, -0.9249201 ]]), translation=np.array([ 0.36589003, -0.08055001,  0.03006   ], dtype=float32), from_frame='tool', to_frame='world'))
+Current location after moving:  [ 0.3591  -0.07988  0.01791]
+Finished Grasping
+[ERROR] [1599966365.565280]: bad callback: <bound method Scene.pose_cb of <__main__.Scene instance at 0x7f57031fd370>>
+Traceback (most recent call last):
+  File "/opt/ros/melodic/lib/python2.7/dist-packages/rospy/topics.py", line 750, in _invoke_callback
+    cb(msg)
+  File "live_execution.py", line 156, in pose_cb
+    jnts.data = self.exec_model.get_curr_joints('left')
+  File "/home/isat/Forward/surgeme_ros/surgeme_wrapper.py", line 63, in get_curr_joints
+    return self.execution.get_curr_joints(limb)
+  File "/home/isat/Forward/surgeme_ros/surgeme_models.py", line 85, in get_curr_joints
+    return list(arm.get_state().joints)
+AttributeError: 'NoneType' object has no attribute 'joints'
+
+Current location:  [ 0.06215001 -0.07376     0.04188   ]
+Approaching desired peg:  1
+Finished Lift
+Moved to neutral :)
+('ignoring with the first condition', 2, 0.519109970408308, u'right', 1)
+('ignoring with the first condition', 2, 0.5340577672867683, u'right', 1)
+('ignoring with the first condition', 2, 0.5450179689142234, u'right', 1)
+('ignoring with the first condition', 2, 0.5446958719239157, u'right', 1)
+('ignoring with the first condition', 2, 0.5382453114010652, u'right', 1)
+('ignoring with the first condition', 2, 0.534220582602463, u'right', 1)
+('ignoring with the first condition', 2, 0.5333077201190801, u'right', 1)
+('ignoring with the first condition', 2, 0.531537361050977, u'right', 1)
+('ignoring with the first condition', 2, 0.517274408927837, u'right', 1)
+('ignoring with the first condition', 1, 0.5050932028230639, u'right', 1)
+('ignoring with the first condition', 1, 0.5302115375136589, u'right', 1)
+('ignoring with the first condition', 1, 0.5494160102160052, u'right', 1)
+('ignoring with the first condition', 1, 0.5621010803759801, u'right', 1)
+('ignoring with the first condition', 1, 0.5682255711052827, u'right', 1)
+('ignoring with the first condition', 1, 0.5632432794065069, u'right', 1)
+('ignoring with the first condition', 1, 0.5505248529176967, u'right', 1)
+('ignoring with the first condition', 1, 0.5366505124062072, u'right', 1)
+('ignoring with the first condition', 1, 0.5162251838498283, u'right', 1)
+('ignoring with the first condition', 2, 0.5028168324071397, u'right', 1)
+('ignoring with the first condition', 2, 0.5168198066031534, u'right', 1)
+('ignoring with the first condition', 2, 0.5242363271836878, u'right', 1)
+('ignoring with the first condition', 2, 0.5268051290384659, u'right', 1)
+('ignoring with the first condition', 2, 0.5252630739887253, u'right', 1)
+('ignoring with the first condition', 2, 0.5166941996461728, u'right', 1)
+('ignoring with the first condition', 2, 0.4995797841684159, u'right', 1)
+('ignoring with the first condition', 1, 0.5258999224962784, u'right', 1)
+('ignoring with the first condition', 1, 0.5615811404492531, u'right', 1)
+('ignoring with the first condition', 1, 0.606487170362286, u'right', 1)
+('ignoring with the first condition', 1, 0.6553340368026884, u'right', 1)
+('ignoring with the first condition', 1, 0.6860445195480995, u'right', 1)
+('ignoring with the first condition', 1, 0.6892487903231496, u'right', 1)
+('ignoring with the first condition', 1, 0.6642181330857204, u'right', 1)
+('ignoring with the first condition', 1, 0.6190457983253979, u'right', 1)
+('ignoring with the first condition', 1, 0.5638750876619921, u'right', 1)
+('ignoring with the first condition', 1, 0.5069794488526552, u'right', 1)
+('ignoring with the first condition', 2, 0.5379920842243494, u'right', 1)
+('ignoring with the first condition', 2, 0.5646927286464747, u'right', 1)
+('ignoring with the first condition', 2, 0.5740015683503255, u'right', 1)
+('ignoring with the first condition', 2, 0.5765926135693397, u'right', 1)
+('ignoring with the first condition', 2, 0.5743189831360616, u'right', 1)
+('ignoring with the first condition', 2, 0.5679297018576455, u'right', 1)
+('ignoring with the first condition', 2, 0.5583062039990051, u'right', 1)
+('ignoring with the first condition', 2, 0.5484422030768249, u'right', 1)
+('ignoring with the first condition', 2, 0.5401110534972473, u'right', 1)
+('ignoring with the first condition', 2, 0.5329476244659792, u'right', 1)
+('ignoring with the first condition', 2, 0.5239486220262949, u'right', 1)
+('ignoring with the first condition', 2, 0.509667854414033, u'right', 1)
+('ignoring with the first condition', 1, 0.5095141012817912, u'none', 0)
+('ignoring with the first condition', 1, 0.5371833260180948, u'none', 0)
+('ignoring with the first condition', 1, 0.5745373568414526, u'none', 0)
+('ignoring with the first condition', 1, 0.6224037729065878, u'none', 0)
+('ignoring with the first condition', 1, 0.6759370518165256, u'none', 0)
+('ignoring with the first condition', 1, 0.72754024018697, u'none', 0)
+('ignoring with the first condition', 1, 0.7756897151938015, u'none', 0)
+('ignoring with the first condition', 1, 0.8218850067831536, u'none', 0)
+('ignoring with the first condition', 1, 0.8638934073676143, u'none', 0)
+('ignoring with the first condition', 1, 0.8972545765369025, u'none', 0)
+('ignoring with the first condition', 1, 0.9198696778645807, u'none', 0)
+('ignoring with the first condition', 1, 0.9335464971404989, u'none', 0)
+('surgeme', 1, 'probability:', 0.9414907271806219, 'On object: ', 0, 'with arm', u'left')
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+JUST CONFIRMING
+('Grasp Points', array([[31, 26],
+       [58, 51],
+       [37, 47]]))
+('Grip Corners:', array([[57, 27],
+       [ 8, 23]]))
+('Dx, Dy', 49, 4)
+('Orientation Angle:', 4.6668583714389955)
+Changing Depth
+('Joint 5 degrees ', 60.27)
+Current location:  [0.32111    0.10222001 0.08822001]
+Current location after moving:  [0.33146    0.05822    0.07298001]
+Finished Approach
+Performed approach
+('ignoring with the second condition', 1, 1, 0.9450604580961375, u'right')
+('ignoring with the second condition', 1, 1, 0.9457509955906158, u'right')
+('ignoring with the second condition', 1, 1, 0.9453020988846244, u'right')
+('ignoring with the second condition', 1, 1, 0.944170458673021, u'right')
+('ignoring with the second condition', 1, 1, 0.9417508453795448, u'right')
+('ignoring with the second condition', 1, 1, 0.9370911966990405, u'right')
+('ignoring with the second condition', 1, 1, 0.9301479364553822, u'right')
+('ignoring with the second condition', 1, 1, 0.9194434918476504, u'right')
+('ignoring with the second condition', 1, 1, 0.8996372308195147, u'right')
+('ignoring with the second condition', 1, 1, 0.8620501201008549, u'right')
+('ignoring with the second condition', 1, 1, 0.8017298089426087, u'right')
+('ignoring with the first condition', 1, 0.7300194996158937, u'right', 1)
+('ignoring with the first condition', 1, 0.6661701740475456, u'right', 1)
+('ignoring with the first condition', 1, 0.60452901363306, u'right', 1)
+('ignoring with the first condition', 1, 0.5229721349431822, u'right', 1)
+('surgeme', 2, 'probability:', 0.5567774958646603, 'On object: ', 2, 'with arm', u'right')
+Current location:  [ 0.31586 -0.18903  0.0698 ]
+Approaching desired peg:  1
+('des pos', RigidTransform(rotation=np.array([[-0.03643514, -0.99775622,  0.05616939],
+       [-0.92387649,  0.05505699,  0.3787096 ],
+       [-0.38095238, -0.03809524, -0.92380952]]), translation=np.array([ 0.31586, -0.18903,  0.0698 ], dtype=float32), from_frame='tool', to_frame='world'))
+Current location after moving:  [ 0.33813003 -0.12559     0.04044   ]
+Finished Grasping
+Current location:  [ 0.34507003 -0.10614     0.03146   ]
+Approaching desired peg:  1
+Finished Lift
+Moved to neutral :)
+('ignoring with the first condition', 2, 0.603817353898984, u'right', 1)
+('ignoring with the first condition', 2, 0.6237820649564793, u'right', 1)
+('ignoring with the first condition', 2, 0.6288615921949451, u'right', 1)
+('ignoring with the first condition', 2, 0.6302896294567778, u'right', 1)
+('ignoring with the first condition', 2, 0.6343171674114767, u'right', 1)
+('ignoring with the first condition', 2, 0.6432328009522805, u'right', 1)
+('ignoring with the first condition', 2, 0.6505293688555618, u'right', 1)
+('ignoring with the first condition', 2, 0.658138679924545, u'right', 1)
+('ignoring with the first condition', 2, 0.6625239638109132, u'right', 1)
+('ignoring with the first condition', 2, 0.6622508317279239, u'right', 1)
+('ignoring with the first condition', 2, 0.6557770400181139, u'right', 1)
+('ignoring with the first condition', 2, 0.7496438768855537, u'right', 1)
+('ignoring with the first condition', 2, 0.7711223261575282, u'right', 1)
+('ignoring with the first condition', 2, 0.778402646457713, u'right', 1)
+('ignoring with the first condition', 2, 0.7788560133960553, u'right', 1)
+('ignoring with the first condition', 2, 0.7767304394097959, u'right', 1)
+('ignoring with the first condition', 2, 0.775492664775572, u'right', 1)
+('ignoring with the first condition', 2, 0.7750323975765943, u'right', 1)
+('ignoring with the first condition', 2, 0.7730973535855241, u'right', 1)
+('ignoring with the first condition', 2, 0.7706331878590824, u'right', 1)
+('ignoring with the first condition', 2, 0.768426592998379, u'right', 1)
+('ignoring with the first condition', 2, 0.766926538826537, u'right', 1)
+('ignoring with the first condition', 2, 0.765821416115825, u'right', 1)
+('ignoring with the first condition', 2, 0.7639977987503936, u'right', 1)
+('ignoring with the first condition', 2, 0.7577133399971488, u'right', 1)
+('ignoring with the first condition', 2, 0.7462847070004998, u'right', 1)
+('ignoring with the first condition', 2, 0.7298506686798548, u'right', 1)
+('ignoring with the first condition', 2, 0.7055469206707823, u'right', 1)
+('ignoring with the first condition', 2, 0.5912463043989676, u'right', 1)
+('ignoring with the first condition', 2, 0.5695460589829058, u'right', 1)
+('ignoring with the first condition', 2, 0.566022043825904, u'right', 1)
+('ignoring with the first condition', 2, 0.5678633234394361, u'right', 1)
+('ignoring with the first condition', 2, 0.572301132024668, u'right', 1)
+('ignoring with the first condition', 2, 0.5766596686516632, u'right', 1)
+('ignoring with the first condition', 2, 0.5808679751026418, u'right', 1)
+('ignoring with the first condition', 2, 0.5843453981617944, u'right', 1)
+('ignoring with the first condition', 2, 0.5866816606379608, u'right', 1)
+('ignoring with the first condition', 2, 0.5851099919028442, u'right', 1)
+('ignoring with the first condition', 2, 0.5814985838628626, u'right', 1)
+('ignoring with the first condition', 2, 0.5796585933485574, u'right', 1)
+('ignoring with the first condition', 2, 0.5794813771762657, u'right', 1)
+('ignoring with the first condition', 2, 0.5793801844525461, u'right', 1)
+('ignoring with the first condition', 2, 0.5815107149951847, u'right', 1)
+('ignoring with the first condition', 2, 0.5850645511864322, u'right', 1)
+('ignoring with the first condition', 2, 0.5894767218945843, u'right', 1)
+('ignoring with the first condition', 2, 0.5936081051357636, u'right', 1)
+('ignoring with the first condition', 2, 0.5962125598451766, u'right', 1)
+('ignoring with the first condition', 2, 0.5979204950142271, u'right', 1)
+('ignoring with the first condition', 2, 0.5986462924539983, u'right', 1)
+('ignoring with the first condition', 2, 0.5992964876881065, u'right', 1)
+('ignoring with the first condition', 2, 0.6001265717091532, u'right', 1)
+('ignoring with the first condition', 2, 0.6013966875057805, u'right', 1)
+('ignoring with the first condition', 2, 0.6035672370091689, u'right', 1)
+('ignoring with the first condition', 2, 0.6034502922796191, u'right', 1)
+('ignoring with the first condition', 2, 0.5996650615918832, u'right', 1)
+('ignoring with the first condition', 2, 0.5930798423804534, u'right', 1)
+('ignoring with the first condition', 2, 0.5860940221434564, u'right', 1)
+('ignoring with the first condition', 2, 0.5792443100808659, u'right', 1)
+('ignoring with the first condition', 2, 0.5758250091569378, u'right', 1)
+('ignoring with the first condition', 2, 0.5791040838611757, u'right', 1)
+('ignoring with the first condition', 2, 0.587220604737135, u'right', 1)
+('ignoring with the first condition', 2, 0.5972125568866717, u'right', 1)
+('ignoring with the first condition', 2, 0.6071141992529014, u'right', 1)
+('ignoring with the first condition', 2, 0.6148080225732611, u'right', 1)
+('ignoring with the first condition', 2, 0.6196668078455487, u'right', 1)
+('ignoring with the first condition', 2, 0.6223755974950159, u'right', 1)
+('ignoring with the first condition', 2, 0.6246389898842888, u'right', 1)
+('ignoring with the first condition', 2, 0.7337951980782346, u'right', 1)
+('ignoring with the first condition', 2, 0.7580230875899344, u'right', 1)
+('ignoring with the first condition', 2, 0.7654109585862687, u'right', 1)
+('ignoring with the first condition', 2, 0.7617071808669208, u'right', 1)
+('ignoring with the first condition', 2, 0.739282617636302, u'right', 1)
+('ignoring with the first condition', 2, 0.6860362186360218, u'right', 1)
+('ignoring with the first condition', 2, 0.6109587591737095, u'right', 1)
+('ignoring with the first condition', 2, 0.5522386911073753, u'right', 1)
+('ignoring with the first condition', 2, 0.4865339414620145, u'right', 1)
+('ignoring with the first condition', 1, 0.5551914520967542, u'right', 1)
+('ignoring with the first condition', 1, 0.7218564044470072, u'right', 1)
+('surgeme', 1, 'probability:', 0.8036575494078045, 'On object: ', 2, 'with arm', u'right')
+Traceback (most recent call last):
+  File "live_execution.py", line 642, in <module>
+    first_peg = np.array(scene.pegs[obj_num]) #xmin,xmax,ymin,ymax choose peg closest to pole required
+IndexError: list index out of range
+('Closed robot connection to server: ', <socket._socketobject object at 0x7f57031e74b0>)
+('Closed robot connection to server: ', <socket._socketobject object at 0x7f57031e74b0>)
+('Closed robot connection to server: ', <socket._socketobject object at 0x7f57031e74b0>)
+exiting
+Traceback (most recent call last):
+  File "/opt/ros/melodic/lib/python2.7/dist-packages/rospy/core.py", line 568, in signal_shutdown
+    h()
+  File "live_execution.py", line 516, in exit_routine
+    exit(0)
+  File "/usr/lib/python2.7/site.py", line 366, in __call__
+    raise SystemExit(code)
+SystemExit:
+
+
+
+
+TRIAL 2
