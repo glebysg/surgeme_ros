@@ -1,0 +1,77 @@
+1) cd ~/realsense_ws
+   export ROS_IP=128.46.125.203
+   source devel/setup.bash
+   roslaunch realsense2_camera rs_camera.launch filters:=pointcloud align_depth:=true
+2)on the other computer-->
+ 2.1) cd wsps/fwd_ws/
+      export ROS_MASTER_URI=http://128.46.125.203:11311
+      source devel/setup.bash
+      rosrun darknet_ros repub.p
+In another tab in the same workspace
+ 2.2) export ROS_MASTER_URI=http://128.46.125.203:11311
+      source devel/setup.bash
+      roslaunch darknet_ros darknet_ros.launch
+ 2.3) export ROS_MASTER_URI=http://128.46.125.203:11311
+      source devel/setup.bash
+      rosrun darknet_ros yolo_track.py
+
+ 2.4) cd ~/wsps/mrcnn_ws/src/Mask_RCNN
+      source ../../devel/setup.bash
+      source maskenv/bin/activate
+      python test.py (maskRCNN) - THIS MUST BE done last because it thakes the most RAM (Mrcnn_ws/src/) ?(setup virtual environment called maskenv (use workon))
+
+ 2.5) cd ~/wsps/mrcnn_ws/src/Mask_RCNN
+      source ../../devel/setup.bash
+      source maskenv/bin/activate
+      python sub_masks.py
+
+3) Back at tje isat lab..
+rostopic list: (YOU SHOULD SEE)
+/darknet_ros/bounding_boxes
+/darknet_ros/check_for_objects/cancel
+/darknet_ros/check_for_objects/feedback
+/darknet_ros/check_for_objects/goal
+/darknet_ros/check_for_objects/result
+/darknet_ros/check_for_objects/status
+/darknet_ros/detection_image
+/darknet_ros/found_object
+/darknet_ros/tracked_bbs
+/masks_t
+
+
+4) run:
+cd ~/realsense_ws/src/surgeme_exec
+export ROS_IP=128.46.125.203
+source ../../devel/setup.bash
+workon surgeme_execution
+python final_execution
+
+
+If pole positions are messed up then run yolo_track.py again
+
+
+
+
+
+1) Run Realsense
+   cd Forward/realsense_ws/
+   source devel/setup.bash
+   roslaunch realsense2_camera rs_camera.launch filters:=pointcloud align_depth:=true
+
+2) Running Yolo
+   cd Forward/darknet_ws
+   source devel/setup.bash
+   roslaunch darknet_ros darknet_ros.launch
+
+3)Running MaskRCNN
+  workon maskenv
+  cd Forward/mask_ws
+  source install/setup.bash
+  rosrun mrcnn_utils pub_obj_masks.py
+
+4) Before running the execution program
+  source the  'setup.bash' of the mask_ws
+
+
+      rosrun darknet_ros repub.p
+
